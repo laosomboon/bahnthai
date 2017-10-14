@@ -1650,6 +1650,7 @@ p {
 .menu-restaurant .menu-title {
     float: left;
     /* font-family: sans-serif; */
+    max-width: 85%;
     font-size: 1.4rem;
     text-transform: uppercase;
     letter-spacing: 1px;
