@@ -3,8 +3,12 @@ function createMenuElement(ficon, menuName, menuPrice, menuDesc, menuImg) {
         return null;
     }
     var div = document.createElement('div');
-    div.setAttribute("class", "mix col-xs-12 col-sm-12 col-md-6 menu-restaurant");
+    div.classList.add('mix');
     div.classList.add(ficon);
+    div.classList.add('col-xs-12');
+    div.classList.add('col-sm-12');
+    div.classList.add('col-md-6');
+    div.classList.add('menu-restaurant');
     div.setAttribute('data-cat', ficon);
 
 
@@ -17,11 +21,10 @@ function createMenuElement(ficon, menuName, menuPrice, menuDesc, menuImg) {
     a1.innerHTML = menuName;
 
     var lineSpan = document.createElement('span');
-    lineSpan.setAttribute("style", "left:260px; right: 44px; color:black;");
+    lineSpan.setAttribute("style", "left:166px; right: 44px;");
     lineSpan.setAttribute("class", "menu-line");
 
     var priceSpan = document.createElement('span');
-    priceSpan.setAttribute("style", "float:right;");
     priceSpan.setAttribute("class", "menu-price");
     priceSpan.innerHTML = menuPrice;
 
@@ -39,6 +42,7 @@ function createMenuElement(ficon, menuName, menuPrice, menuDesc, menuImg) {
 
     return div;
 }
+
 
 
 /*Initialize menus*/
