@@ -641,3 +641,8 @@ function initMap() {
         map: map
     });
 }
+
+
+function goToAddmin() {
+    location.assign("/login.html");
+}
