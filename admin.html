@@ -34,44 +34,69 @@
             <img src="/images/indexlogo.png" style="width:25%;">
             <i class="fa fa-remove w3-button w3-right w3-red  w3-hide-large w3-large" onclick="w3_close();"></i>
         </a>
-        <!--<a href="#" class="w3-bar-item w3-button w3-red" onclick="toggleSignIn()">Logout</a>-->
+        <a href="javascript:void(0)"
+           class="w3-bar-item w3-button w3-dark-grey w3-button w3-hover-black w3-left-align"
+           onclick="document.getElementById('id01').style.display='block'">New Product<i class="w3-padding fa fa-plus"></i></a>
         <div id="SidenavContainer"></div>
-        <!--<a id="myBtn" onclick="highlight('Demo1')" href="javascript:void(0)" class="w3-bar-item w3-button">Appetizers<i class="fa fa-caret-down w3-margin-left"></i></a>-->
-        <!--<div id="Demo1" class="w3-hide w3-animate-left">-->
-            <!--<a href="javascript:void(0)" class="w3-bar-item w3-button w3-border-bottom test w3-hover-light-grey" onclick="openMail('Borge');w3_close();" id="firstTab">-->
-                <!--<div class="w3-container">-->
-                    <!--<img class="w3-round w3-margin-right" src="https://farm2.staticflickr.com/1603/25869347651_fee36606a5_z.jpg" style="width:15%;">-->
-                    <!--<span class="w3-opacity w3-large">Mango Salad</span>-->
-                <!--</div>-->
-            <!--</a>-->
-        <!--</div>-->
-        <!--<a href="#" class="w3-bar-item w3-button"><i class="fa fa-paper-plane w3-margin-right"></i>Sent</a>-->
-        <!--<a href="#" class="w3-bar-item w3-button"><i class="fa fa-hourglass-end w3-margin-right"></i>Drafts</a>-->
-        <!--<a href="#" class="w3-bar-item w3-button"><i class="fa fa-trash w3-margin-right"></i>Logout</a>-->
     </nav>
 
     <!-- Modal that pops up when you click on "New Message" -->
-    <!-- <div id="id01" class="w3-modal" style="z-index:4">
+    <div id="id01" class="w3-modal" style="z-index:4">
         <div class="w3-modal-content w3-animate-zoom">
-            <div class="w3-container w3-padding w3-red">
-                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-red w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
-                <h2>Send Mail</h2>
+            <div class="w3-container w3-padding w3-light-green">
+                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-red w3-right w3-small"><i class="fa fa-remove"></i></span>
+                <h2>New Product</h2>
             </div>
             <div class="w3-panel">
-                <label>To</label>
-                <input class="w3-input w3-border w3-margin-bottom" type="text">
-                <label>From</label>
-                <input class="w3-input w3-border w3-margin-bottom" type="text">
-                <label>Subject</label>
-                <input class="w3-input w3-border w3-margin-bottom" type="text">
-                <input class="w3-input w3-border w3-margin-bottom" style="height:150px" placeholder="What's on your mind?">
-                <div class="w3-section">
-                    <a class="w3-button w3-red" onclick="document.getElementById('id01').style.display='none'">Cancel  <i class="fa fa-remove"></i></a>
-                    <a class="w3-button w3-light-grey w3-right" onclick="document.getElementById('id01').style.display='none'">Send  <i class="fa fa-paper-plane"></i></a>
-                </div>
+                <form class="form-style-9" onsubmit="return false;" id="newProductForm">
+                    <ul>
+                        <li>
+                            <input type="hidden" id="newMenuId" value="" />
+                            <input type="text" id="newMenuName" name="name" class="field-style field-full align-none" placeholder="Name" />
+                        </li>
+                        <li>
+                            <select class="w3-select" name="newMenuCate">
+                                <option value="" disabled selected>Choose Category</option>
+                                <option value="0">Appitizer</option>
+                                <option value="1">Thai salad</option>
+                                <option value="2">Soup</option>
+                                <option value="3">Thai curries</option>
+                                <option value="4">Fish & Seafood</option>
+                                <option value="5">Stir-fried Dish</option>
+                                <option value="6">Barbecue</option>
+                                <option value="7">Vegetable</option>
+                                <option value="8">Noodle Dish</option>
+                                <option value="9">Rice Dish</option>
+                                <option value="10">Thai Dessert</option>
+                                <option value="11">Lunch Special</option>
+                            </select>
+                        </li>
+                        <li>
+                            <input type="text" id="newMenuImage" name="image" class="field-style field-full align-none" placeholder="Image Url" />
+                        </li>
+                        <li>
+                            <input type="text" id="newMenuThainame" name="thainame" class="field-style field-full align-none" placeholder="Thai name" />
+                        </li>
+                        <li>
+                            <input type="number" id="newMenuPrice" name="price" step=".01" class="field-style field-full align-none" placeholder="Price (ex : 9.95)" />
+                        </li>
+                        <li>
+                            <p><input class="w3-input w3-border w3-col-6" id="newMenuSpiceLevel" type="number" name="spice_level" placeholder="Spice Level (0-5)" value="" min="0" max="5"></p>
+                        </li>
+                        <li>
+                            <textarea name="description" class="field-style" id="newMenuDescription" placeholder="description"></textarea>
+                        </li>
+                        <li>
+                            <div class="w3-section">
+                                <a class="w3-button w3-red" onclick="document.getElementById('id01').style.display='none'">Cancel  <i class="fa fa-remove"></i></a>
+                                <a class="w3-button w3-light-green w3-right" onclick="addProduct();">Add</a>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <!-- Overlay effect when opening the side navigation on small screens -->
     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close Sidemenu" id="myOverlay"></div>

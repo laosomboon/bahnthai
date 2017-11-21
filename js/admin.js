@@ -1,7 +1,9 @@
- // Document on load.
+ db = firebase.firestore();
+
+// Document on load.
  $(function() {
 
-        var db = firebase.firestore();
+        // var db = firebase.firestore();
 
          firebase.auth().onAuthStateChanged(function(user) {
              if (!user) {
@@ -285,6 +287,7 @@
      alertify.confirm("Removing","Do you really want to delete this product?",
          function(){
              db.collection(dbUrl).doc(menuId.toString()).delete().then(function() {
+                 location.reload();
                  alertify.warning("Menu deleted!");
              }).catch(function(error) {
                  alertify.error("Error removing Menu: ", error);
@@ -298,6 +301,35 @@
 
  }
 
+
+
+ function addProduct(){
+
+     var db = firebase.firestore();
+
+     var f = document.getElementById('newProductForm');
+     var data = {};
+     data.name = f.newMenuName.value;
+     data.thainame = f.newMenuThainame.value;
+     data.image = f.newMenuImage.value;
+     data.price = f.newMenuPrice.value;
+     data.spicy_level = f.newMenuSpiceLevel.value;
+     data.description = f.newMenuDescription.value;
+
+     var url = "bahnthai-menus/" + f.newMenuCate.value.toString() + "/items";
+
+     db.collection(url).get().then(function(snaps){
+         db.collection(url).doc(snaps.size.toString()).set(data).then(function(){
+             document.getElementById('id01').style.display='none';
+             alertify.success("Product successfully added.");
+         }).catch(function(err){
+             alertify.error(err.message);
+         });
+     });
+
+
+     //
+ }
 
 
  function addBulk(){
