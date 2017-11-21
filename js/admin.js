@@ -282,7 +282,7 @@
 
      var dbUrl = 'bahnthai-menus/' + cateId + '/items';
 
-     alertify.confirm("Do you really want to delete this product?",
+     alertify.confirm("Removing","Do you really want to delete this product?",
          function(){
              db.collection(dbUrl).doc(menuId.toString()).delete().then(function() {
                  alertify.warning("Menu deleted!");
