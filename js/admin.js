@@ -11,6 +11,15 @@
              }else{
 
 
+                var dbRef =  db.collection("bahnthai-menus").where("name","!", "").orderBy("name").onSnapshort(function(snaps){
+                            snaps.docChanges.forEach(function(i){
+                                console.log(i.name);
+                            });
+                 });
+
+
+
+
 
                  db.collection("bahnthai-menus").get().then(function(snap) {
 
@@ -317,6 +326,7 @@
      data.description = f.newMenuDescription.value;
 
      var url = "bahnthai-menus/" + f.newMenuCate.value.toString() + "/items";
+     console.log(url);
 
      db.collection(url).get().then(function(snaps){
          db.collection(url).doc(snaps.size.toString()).set(data).then(function(){
