@@ -10,12 +10,12 @@
                  location.assign('/login.html');
              }else{
 
-
-                var dbRef =  db.collection("bahnthai-menus").where("name","!", "").orderBy("name").onSnapshort(function(snaps){
-                            snaps.docChanges.forEach(function(i){
-                                console.log(i.name);
-                            });
-                 });
+                //
+                // var dbRef =  db.collection("bahnthai-menus").where("name","!", "").orderBy("name").onSnapshort(function(snaps){
+                //             snaps.docChanges.forEach(function(i){
+                //                 console.log(i.name);
+                //             });
+                //  });
 
 
 

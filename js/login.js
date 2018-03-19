@@ -6,6 +6,7 @@
      $("#loginForm").submit(function(e) {
          event.preventDefault();
 
+
          if (firebase.auth().currentUser) {
              // [START signout]
              firebase.auth().signOut();
