@@ -89,7 +89,7 @@ function createMenuElement(id, menu) {
         });
 
     }else if(menu.price){
-        a.innerHTML += `${menu.name} <span class="thainame">${menu.thainame}</span>`;
+        a.innerHTML += `${menu.name} <span class="thainame">${menu.thainame?menu.thainame:""}</span>`;
         priceSpan.innerHTML += menu.price;
     }else if(menu.options){
         let names = sortByName(menu.options);
