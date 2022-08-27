@@ -8,7 +8,7 @@ function createMenuElement(id, menuName, menuPrice, menuDesc, menuImg) {
     div.classList.add(id);
     div.classList.add('col-xs-12');
     div.classList.add('col-sm-12');
-    div.classList.add('col-md-6');
+    div.classList.add('col-md-12');
     div.classList.add('menu-restaurant');
     div.setAttribute('data-cat', id);
 

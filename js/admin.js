@@ -229,7 +229,9 @@
 
      var menuUrl = 'bahnthai-menus/' + menu.cateId.toString() + '/items';
 
+     //var db = firebase.firestore();
      var db = firebase.firestore();
+
 
 
      db.collection(menuUrl).doc(menu.id.toString()).get().then(function(doc){

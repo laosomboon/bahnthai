@@ -1654,7 +1654,8 @@ p {
     font-size: 1.4rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #fb6e14;
+    /* color: #fb6e14; */
+    color: #2eb82e;
 }
 
 .menu-restaurant .menu-line {
