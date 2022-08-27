@@ -31,6 +31,26 @@ function sortOptions(options){
     });
     return sortable;
 }
+function sortByName(options){
+   let sortable = [];
+   for (var k in options){
+     if(k.includes("Chicken") && !k.includes("Shrimp")){
+        sortable.push({order:1,key:k, value:options[k]});
+     }else if(k.includes("Beef")){
+        sortable.push({order:2,key:k, value:options[k]});
+     }else if(k.includes("Shrimp") && k.includes("Chicken")){
+        sortable.push({order:3,key:k, value:options[k]});
+     }else if(k.includes("Shrimp") || k.includes("Prawn") || k.includes("Shrimps") && !k.includes("Chicken")){
+        sortable.push({order:4,key:k, value:options[k]});
+     }else if(k.includes("Seafood")){
+        sortable.push({order:6,key:k, value:options[k]});
+     }else{
+        console.log(k);
+     }
+   }
+   sortable.sort((a, b)=>{return a.order - b.order});
+   return sortable;
+}
 
 function createMenuElement(id, menu) {
 
@@ -69,15 +89,18 @@ function createMenuElement(id, menu) {
         });
 
     }else if(menu.price){
-        a.innerHTML += menu.name;
+        a.innerHTML += `${menu.name} <span class="thainame">${menu.thainame}</span>`;
         priceSpan.innerHTML += menu.price;
     }else if(menu.options){
+        let names = sortByName(menu.options);
+        let thainames = sortByName(menu.thaioptions);
+        menu.options = names;
+        menu.thaioptions = thainames;
+        for(let i = 0; i < menu.options.length;i++ ){
+            a.innerHTML +=  `${menu.options[i].key} <span class="thainame">${menu.thaioptions[i].value}<span><br>`;
+            priceSpan.innerHTML += `${menu.options[i].value}<br>`;
+        }
 
-        let menuSorted = sortOptions(menu.options);
-        menuSorted.forEach(e=>{
-            a.innerHTML += `${e.key}<br>`;
-            priceSpan.innerHTML += `${e.value}<br>`;
-        });
 
     }else{
         console.log(menu.order);

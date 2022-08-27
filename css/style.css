@@ -1655,8 +1655,14 @@ p {
     text-transform: uppercase;
     letter-spacing: 1px;
     /* color: #fb6e14; */
-    color: #2eb82e;
+    color: #2eb82e;   
 }
+.menu-restaurant .menu-title .thainame{
+        text-transform: none;
+        font: italic .9em "Fira Sans", serif;
+        color:#222;
+}
+
 
 .menu-restaurant .menu-line {
     position: absolute;
