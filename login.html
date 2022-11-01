@@ -189,12 +189,12 @@
 <body>
     <div class="login">
         <h1>Under Maintenance!</h1>
-        <h1><a href="/" style="color:#6eb6de">Go Home</a></h1>
-        <!-- <form id="loginForm">
+        <!-- <h1><a href="/" style="color:#6eb6de">Go Home</a></h1> -->
+        <form id="loginForm">
             <input type="text" name="email" id="email" placeholder="Email" required="required" />
             <input type="password" name="pass" id="password" placeholder="Password" required="required" />
             <button id="loginBtn" class="btn btn-primary btn-block btn-large">Sign In</button>
-        </form> -->
+        </form>
     </div>
 
     <!-- jQuery -->
@@ -220,18 +220,20 @@
     <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-messaging.js"></script>
-    <script>
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyBr5QhQX7GTR6w6E2EotsBhch3Y5F9tHUY",
-            authDomain: "thaismile-oakville.firebaseapp.com",
-            databaseURL: "https://thaismile-oakville.firebaseio.com",
-            projectId: "thaismile-oakville",
-            storageBucket: "thaismile-oakville.appspot.com",
-            messagingSenderId: "145658044209"
-        };
-        firebase.initializeApp(config);
-    </script>
+   <script>
+
+        const firebaseConfig = {
+                apiKey: "AIzaSyAef28MOvO7MHVZZJBvIYY7UI_oetbf85Q",
+                authDomain: "bahnthai-menu.firebaseapp.com",
+                projectId: "bahnthai-menu",
+                storageBucket: "bahnthai-menu.appspot.com",
+                messagingSenderId: "740062677914",
+                appId: "1:740062677914:web:33d96138433e5bb0f8c823",
+                measurementId: "G-J6SKHHHYRX"
+            };
+            firebase.initializeApp(firebaseConfig);
+
+    </script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
     <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>

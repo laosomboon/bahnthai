@@ -7,11 +7,11 @@
          event.preventDefault();
 
 
-         if (firebase.auth().currentUser) {
-             // [START signout]
-             firebase.auth().signOut();
-             // [END signout]
-         } else {
+        //  if (firebase.auth().currentUser) {
+        //      // [START signout]
+        //      firebase.auth().signOut();
+        //      // [END signout]
+        //  } else {
 
              var email = document.getElementById('email');
              var password = document.getElementById('password');
@@ -47,7 +47,7 @@
              }
 
 
-         }
+        //  }
 
      });
 
@@ -59,17 +59,9 @@
 
 
 
-
-
-
-
-
-
-
-
  function initApp() {
      firebase.auth().onAuthStateChanged(function(user) {
-         if (user) {
+         if (user) {    
             location.assign('/admin.html');
          }
      });

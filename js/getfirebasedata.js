@@ -3,22 +3,13 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-analytics.js";
   import { getFirestore, collection, getDocs,onSnapshot,addDoc,deleteDoc,query,where,orderBy } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAef28MOvO7MHVZZJBvIYY7UI_oetbf85Q",
-    authDomain: "bahnthai-menu.firebaseapp.com",
-    projectId: "bahnthai-menu",
-    storageBucket: "bahnthai-menu.appspot.com",
-    messagingSenderId: "740062677914",
-    appId: "1:740062677914:web:33d96138433e5bb0f8c823",
-    measurementId: "G-J6SKHHHYRX"
-  };
+  import {getAuth} from "https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js";
+  import { firebaseConfig } from "./firebaseConfig.js";
+
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+  const auth = getAuth(app);
 
 
 function sortOptions(options){

@@ -34,14 +34,14 @@
             <img src="/images/indexlogo.png" style="width:25%;">
             <i class="fa fa-remove w3-button w3-right w3-red  w3-hide-large w3-large" onclick="w3_close();"></i>
         </a>
-        <a href="javascript:void(0)"
+        <!-- <a href="javascript:void(0)"
            class="w3-bar-item w3-button w3-dark-grey w3-button w3-hover-black w3-left-align"
-           onclick="document.getElementById('id01').style.display='block'">New Product<i class="w3-padding fa fa-plus"></i></a>
+           onclick="document.getElementById('id01').style.display='block'">New Product<i class="w3-padding fa fa-plus"></i></a> -->
         <div id="SidenavContainer"></div>
     </nav>
 
-    <!-- Modal that pops up when you click on "New Message" -->
-    <div id="id01" class="w3-modal" style="z-index:4">
+    <!-- Modal that pops up when you click on "New Product" -->
+    <!-- <div id="id01" class="w3-modal" style="z-index:4">
         <div class="w3-modal-content w3-animate-zoom">
             <div class="w3-container w3-padding w3-light-green">
                 <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-red w3-right w3-small"><i class="fa fa-remove"></i></span>
@@ -58,16 +58,16 @@
                             <select class="w3-select" name="newMenuCate">
                                 <option value="" disabled selected>Choose Category</option>
                                 <option value="0">Appitizer</option>
-                                <option value="1">Thai salad</option>
+                                <option value="1">Thai salads</option>
                                 <option value="2">Soup</option>
                                 <option value="3">Thai curries</option>
                                 <option value="4">Fish & Seafood</option>
-                                <option value="5">Stir-fried Dish</option>
+                                <option value="5">Stir-fried Dishes</option>
                                 <option value="6">Barbecue</option>
-                                <option value="7">Vegetable</option>
-                                <option value="8">Noodle Dish</option>
-                                <option value="9">Rice Dish</option>
-                                <option value="10">Thai Dessert</option>
+                                <option value="7">Vegetables</option>
+                                <option value="8">Noodle Dishes</option>
+                                <option value="9">Rice Dishes</option>
+                                <option value="10">Specialty Thai Desserts</option>
                                 <option value="11">Lunch Special</option>
                             </select>
                         </li>
@@ -96,14 +96,19 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> -->
+
+
+
+
+    
 
     <!-- Overlay effect when opening the side navigation on small screens -->
     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close Sidemenu" id="myOverlay"></div>
 
     <!-- Page content -->
     <div class="w3-main" style="margin-left:320px;">
-        <button style="display:inline-block;float:right;margin:20px 20px 0" class="w3-btn w3-small w3-red" onclick="toggleSignIn()">Logout</button>
+        <button style="display:inline-block;float:right;margin:20px 20px 0" class="w3-btn w3-small w3-red" onclick="signMeOut()">Logout</button>
         <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
         <!--<a href="javascript:void(0)" class="w3-hide-large w3-red w3-button w3-right w3-margin-top w3-margin-right" onclick="document.getElementById('id01').style.display='block'">-->
             <!--<i class="fa fa-pencil"></i></a>-->
@@ -144,9 +149,10 @@
                     </ul>
                 </form>
 
-        </div>
+     </div>
 
     </div>
+    
 
 
 
@@ -168,33 +174,12 @@
 
     <!-- Flexslider -->
     <script src="js/jquery.flexslider-min.js"></script>
-    <script>
-        $(function() {
-            $('#date').datetimepicker();
-        });
-    </script>
-    <!-- Load Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-messaging.js"></script>
-    <script>
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyBr5QhQX7GTR6w6E2EotsBhch3Y5F9tHUY",
-            authDomain: "thaismile-oakville.firebaseapp.com",
-            databaseURL: "https://thaismile-oakville.firebaseio.com",
-            projectId: "thaismile-oakville",
-            storageBucket: "thaismile-oakville.appspot.com",
-            messagingSenderId: "145658044209"
-        };
-        firebase.initializeApp(config);
-    </script>
+       
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
     <!-- Main JS -->
-    <script type="text/javascript" src="js/admin.js"></script>
+    <script type="module" src="js/initfirebase.js"></script>
+    <script type="module" src="js/admin.js"></script>
 
 
 </body>

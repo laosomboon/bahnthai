@@ -3,8 +3,6 @@
 
     'use strict';
 
-
-
     // iPad and iPod detection	
     var isiPad = function() {
         return (navigator.platform.indexOf("iPad") != -1);
@@ -27,6 +25,40 @@
 
 
     };
+
+
+
+
+
+/*Fetch Menu from Firebase*/
+ // const dbRefObject = firebase.database().ref().child('allmenus');
+
+
+    // const db = getFirestore();
+    // const colRef = collection(db, "applebyline");
+    
+    // const q = query(colRef, orderBy('order'));
+    
+    // onSnapshot(q, (snap) => {
+    //     let menus = [];
+    //     snap.docs.forEach(element => { 
+    //         menus.push({...element.data(), id: element.id});
+    //     });
+    
+    //     menus.forEach((menu) =>{
+    
+    //         let id = menu.category.replace(/\s|(?!<a(.*)>(.*))(&amp;|&)/g,'');
+    //         let elem = createMenuElement(id ,menu);
+    //         let menuContainer = document.getElementById('Container');
+    //                 if (elem) {
+    //                     menuContainer.appendChild(elem);
+    //                 }  
+    //     });
+
+
+
+
+
 
     var sliderMain = function() {
 
@@ -644,5 +676,5 @@ function initMap() {
 
 
 function goToAddmin() {
-    location.assign("/login.html");
+    window.location.replace("https://console.firebase.google.com/u/3/project/bahnthai-2ea23/firestore/data/~2Fapplebyline~2FVp32B5NQjCmAawtgarHw");
 }
