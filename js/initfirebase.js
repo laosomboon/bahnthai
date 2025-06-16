@@ -1,295 +1,510 @@
- // Import the functions you need from the SDKs you need
-  import { initializeApp} from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-analytics.js";
-  import {getFireStore,collection,onSnapshot,query,orderBy } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js";
-  import { getAuth, signOut} from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js";
-  import { firebaseConfig } from "./firebaseConfig.js";
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged , signOut } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+} from "https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js";
+import { firebaseConfig } from "./firebaseConfig.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getFireStore(app);
-  const colRef = collection(db, "applebyline");
-  const q = query(colRef, orderBy('order'));
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
+// Categories definition
+const categories = [
+  { name: "Appetizers", key: "Appetizer", order: 1 },
+  { name: "Barbeque", key: "Barbeque", order: 4 },
+  { name: "Fish & Seafoods", key: "Fish & Seafood", order: 6 },
+  { name: "Lunch Specials", key: "Lunch Special", order: 10 },
+  { name: "Noodle Dishes", key: "Noodle Dishes", order: 8 },
+  { name: "Rice Dishes", key: "Rice Dishes", order: 9 },
+  { name: "Soups", key: "Soup", order: 2 },
+  { name: "Thai Desserts", key: "Specialty Thai Desserts" },
+  { name: "Stir-fired Dishes", key: "Stir-fried Dishes", order: 5 },
+  { name: "Thai curries", key: "Thai Curries", order: 4 },
+  { name: "Thai Salads", key: "Thai Salads", order: 3 },
+  { name: "Vegetable", key: "Vegetables", order: 7 },
+];
 
- var menupack = [];
+// Real-time menu population
+const colRef = collection(db, "applebyline");
+const q = query(colRef, orderBy("order"));
 
+onSnapshot(q, (snap) => {
+  const validKeys = categories.map(c => c.key);
+  const menus = snap.docs
+    .map(doc => ({ ...doc.data(), id: doc.id }))
+    .filter(m => validKeys.includes(m.category));
 
+  const sideNav = document.getElementById("SidenavContainer");
+  sideNav.innerHTML = "";
 
- 
- onSnapshot(q, (snap) => {
-     let menus = [];
-     snap.docs.forEach(element => { 
-         menus.push({...element.data(), id: element.id});
-     });
-     
-      menupack.push({name:"Appetizers", items:menus.filter((e)=>{return e.category == "Appetizer"})});
-      menupack.push({name:"Barbeque", items:menus.filter((e)=>{return e.category == "Barbeque"})});
-      menupack.push({name:"Fish & Seafoods", items:menus.filter((e)=>{return e.category == "Fish & Seafood"})});
-      menupack.push({name:"Lunch Specials",items:menus.filter((e)=>{return e.category == "Lunch Special"})});
-      menupack.push({name:"Noodle Dishes", items: menus.filter((e)=>{return e.category == "Noodle Dishes"})});
-      menupack.push({name:"Rice Dishes", items:menus.filter((e)=>{return e.category == "Rice Dishes"})});
-      menupack.push({name:"Soups", items:menus.filter((e)=>{return e.category == "Soup"})});
-      menupack.push({name:"Thai Desserts",items:menus.filter((e)=>{return e.category == "Specialty Thai Desserts"})});
-      menupack.push({name:"Stir-fired Dishes", items:menus.filter((e)=>{return e.category == "Stir-fried Dishes"})});
-      menupack.push({name:"Thai curries", items:menus.filter((e)=>{return e.category == "Thai Curries"})});
-      menupack.push({name:"Thai Salads", items:menus.filter((e)=>{return e.category == "Thai Salads"})});
-      menupack.push( {name:"Vegetable", items:menus.filter((e)=>{return e.category == "Vegetables"})});
+  const sortedCategories = [...categories].sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+
+  sortedCategories.forEach(cat => {
+    const filtered = menus.filter(m => m.category === cat.key);
+    if (!filtered.length) return;
+
+    const cateId = cat.key.replace(/[^a-zA-Z0-9]/g, "");
+
+    const a = document.createElement("a");
+    a.id = cateId + "Btn";
+    a.href = "javascript:void(0)";
+    a.classList.add("w3-bar-item", "w3-button");
+    a.onclick = () => highlight(cateId);
+    a.innerText = cat.name;
+
+    const i = document.createElement("i");
+    i.classList.add("fa", "fa-caret-down", "w3-margin-left");
+    a.appendChild(i);
+
+    const div = document.createElement("div");
+    div.id = cateId;
+    div.classList.add("w3-hide", "w3-animate-left");
+
+    filtered.forEach(menu => {
       
-      menupack.forEach((e)=>{
+      const innerA = document.createElement("a");
+      innerA.href = "javascript:void(0)";
+      innerA.classList.add("w3-bar-item", "w3-button", "w3-border-bottom", "w3-hover-light-grey");
+      innerA.innerText = menu.name;
+      innerA.style.cssText = "font: .7em Arial, sans-serif; color:blue";
+      innerA.onclick = () => openMenu(menu);
+      div.appendChild(innerA);
+    });
 
-        let cateId = e.name.replace(/\s|(?!<a(.*)>(.*))(&amp;|&)/g,'');
-
-        var a = document.createElement('a');
-        a.setAttribute("id", cateId + "Btn");
-        a.setAttribute("onclick", "highlight("+ cateId +")");
-        a.setAttribute("href", "javascript:void(0)");
-        a.classList.add('w3-bar-item');
-        a.classList.add('w3-button');
-        a.innerText = e.name;
-        var i = document.createElement('i');
-            i.classList.add("fa");
-            i.classList.add("fa-caret-down");
-            i.classList.add("w3-margin-left");
-        a.appendChild(i);
-        var div = document.createElement('div');
-        div.setAttribute("id", cateId);
-        div.classList.add("w3-hide");
-        div.classList.add("w3-animate-left");
-        var sideNav = document.getElementById("SidenavContainer");
-            sideNav.appendChild(a);
-            sideNav.appendChild(div);
-        e.items.forEach(m=>{
-
-        var innerA = document.createElement('a');
-        innerA.setAttribute("id",m.id);
-         innerA.setAttribute("onclick", 'openMenu('+JSON.stringify(m)+');w3_close();');
-         innerA.setAttribute("href", "javascript:void(0)");
-         innerA.classList.add('w3-bar-item');
-         innerA.classList.add('w3-button');
-         innerA.classList.add('w3-border-bottom');
-         innerA.classList.add('w3-hover-light-grey');
-         innerA.innerText = m.name;
-         innerA.setAttribute("style","font: .7em Arial, sans-serif; color:blue");
-        div.appendChild(innerA);
-      
-        });
-
-      })
-     
-     });
+    sideNav.appendChild(a);
+    sideNav.appendChild(div);
+  });
+});
 
 
+// Menu view handler
+window.openMenu = async function (menu) {
+  const menuId = document.getElementById("menuId");
+  const menuName = document.getElementById("menuName");
+  const menuDescription = document.getElementById("menuDescription");
+  const menuPrice = document.getElementById("menuPrice");
+  const optionsWrapper = document.getElementById("optionsWrapper");
+  const choicesWrapper = document.getElementById("choicesWrapper");
+  const singlePriceWrapper = document.getElementById("singlePriceWrapper");
+  const optionsContainer = document.getElementById("optionsContainer");
+  const choicesContainer = document.getElementById("choicesContainer");
 
+  // Clear existing dynamic fields
+  optionsContainer.innerHTML = "";
+  choicesContainer.innerHTML = "";
+  menuPrice.value = "";
 
- function toggleSignIn() {
+  const docRef = doc(db, `applebyline/${menu.id}`);
+  const docSnap = await getDoc(docRef);
 
-  // const auth = getAuth(app);
-  // signOut(auth)
-  //   .then(() => {
-  //     location.assign('/login.html');
-  //   })
-  //   .catch((error) => {
-  //     const errorCode = error.code;
-  //     const errorMessage = error.message;
+  if (!docSnap.exists()) {
+    alert("Menu item not found.");
+    return;
+  }
 
-  //   })
+  const data = docSnap.data();
 
-  // if (firebase.auth().currentUser) {
-  //     // [START signout]
-  //     firebase.auth().signOut();
-  //     // [END signout]
-  // } else {
-  //     var email = document.getElementById('email').value;
-  //     var password = document.getElementById('password').value;
+  // Basic fields
+  menuId.value = menu.id;
+  menuName.value = data.name || "";
+  menuDescription.value = data.description || "";
 
+  // Determine pricing type
+  if (data.options) {
+    optionsWrapper.style.display = "block";
+    choicesWrapper.style.display = "none";
+    singlePriceWrapper.style.display = "none";
 
-  //     if (email.length < 4) {
-  //         alertify.error('Please enter an email address.');
-  //         return;
-  //     }
+    for (const [optionName, price] of Object.entries(data.options)) {
+      const thaiName = data.thaioptions?.[optionName] || "";
+      addOption(optionName, price, thaiName);
+    }
+  } else if (data.choices) {
+    choicesWrapper.style.display = "block";
+    optionsWrapper.style.display = "none";
+    singlePriceWrapper.style.display = "none";
 
-  //     if (password.length < 4) {
-  //         alertify.error('Please enter a password.');
-  //         return;
-  //     }
+    for (const [choice, price] of Object.entries(data.choices)) {
+      addChoice(choice, price);
+    }
+  } else if (data.price) {
+    singlePriceWrapper.style.display = "block";
+    optionsWrapper.style.display = "none";
+    choicesWrapper.style.display = "none";
 
+    menuPrice.value = data.price;
+  } else {
+    // default fallback
+    singlePriceWrapper.style.display = "block";
+    optionsWrapper.style.display = "none";
+    choicesWrapper.style.display = "none";
+  }
+};
 
-  //     firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+// Add new Option block
+function addOption(name = "", price = "", thaiName = "") {
+  const container = document.getElementById("optionsContainer");
+  const optionIndex = container.children.length;
 
+  const div = document.createElement("div");
+  div.classList.add("option-block");
+  div.style.marginBottom = "1rem";
 
-  //         var errorCode = error.code;
-  //         var errorMessage = error.message;
+  div.innerHTML = `
+    <label>Option Name</label><br />
+    <input type="text" name="optionName-${optionIndex}" class="field-style field-full" value="${name}" />
 
-  //         if (errorCode === 'auth/wrong-password') {
-  //             alertify.error('Wrong password');
-  //         } else {
-  //             alertity.error(errorMessage);
-  //         }
+    <label>Price</label><br />
+    <input type="number" name="optionPrice-${optionIndex}" step="0.01" class="field-style field-full" value="${price}" />
 
-  //     });
+    <label>Thai Name</label><br />
+    <input type="text" name="thaiOption-${optionIndex}" class="field-style field-full" value="${thaiName}" />
 
-  // }
+    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-small w3-red">Remove</button>
+    <hr />
+  `;
 
+  container.appendChild(div);
 }
 
-function w3_open() {
+// Add new Choice block
+function addChoice(name = "", price = "") {
+  const container = document.getElementById("choicesContainer");
+  const choiceIndex = container.children.length;
+
+  const div = document.createElement("div");
+  div.classList.add("choice-block");
+  div.style.marginBottom = "1rem";
+
+  div.innerHTML = `
+    <label>Choice Name</label><br />
+    <input type="text" name="choiceName-${choiceIndex}" class="field-style field-full" value="${name}" />
+
+    <label>Price</label><br />
+    <input type="number" name="choicePrice-${choiceIndex}" step="0.01" class="field-style field-full" value="${price}" />
+
+    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-small w3-red">Remove</button>
+    <hr />
+  `;
+
+  container.appendChild(div);
+}
+
+window.updateItem = async function (btn) {
+
+  const menuId = document.getElementById("menuId").value;
+  const name = document.getElementById("menuName").value.trim();
+  const description = document.getElementById("menuDescription").value.trim();
+  const price = parseFloat(document.getElementById("menuPrice").value);
+
+  const optionsWrapper = document.getElementById("optionsWrapper");
+  const choicesWrapper = document.getElementById("choicesWrapper");
+ 
+  const dataToUpdate = {
+    name,
+    description,
+    order: 0, // optionally keep or update ordering logic
+  };
+
+
+  // --- OPTIONS ---
+  if (optionsWrapper.style.display === "block") {
+    const optionBlocks = document.querySelectorAll("#optionsContainer .option-block");
+    const options = {};
+    const thaioptions = {};
+
+    optionBlocks.forEach((block, i) => {
+      const optionName = block.querySelector(`[name^="optionName-"]`).value.trim();
+      const optionPrice = parseFloat(block.querySelector(`[name^="optionPrice-"]`).value);
+      const thaiName = block.querySelector(`[name^="thaiOption-"]`).value.trim();
+
+      if (optionName && !isNaN(optionPrice)) {
+        options[optionName] = optionPrice;
+        if (thaiName) thaioptions[optionName] = thaiName;
+      }
+    });
+
+    dataToUpdate.options = options;
+    if (Object.keys(thaioptions).length > 0) {
+      dataToUpdate.thaioptions = thaioptions;
+    }
+    delete dataToUpdate.price;
+    delete dataToUpdate.choices;
+  }
+
+  // --- CHOICES ---
+  else if (choicesWrapper.style.display === "block") {
+    const choiceBlocks = document.querySelectorAll("#choicesContainer .choice-block");
+    const choices = {};
+
+    choiceBlocks.forEach((block, i) => {
+      const choiceName = block.querySelector(`[name^="choiceName-"]`).value.trim();
+      const choicePrice = parseFloat(block.querySelector(`[name^="choicePrice-"]`).value);
+
+      if (choiceName && !isNaN(choicePrice)) {
+        choices[choiceName] = choicePrice;
+      }
+    });
+
+    dataToUpdate.choices = choices;
+    delete dataToUpdate.price;
+    delete dataToUpdate.options;
+    delete dataToUpdate.thaioptions;
+  }
+
+  // --- SINGLE PRICE ---
+  else {
+    if (!isNaN(price)) {
+      dataToUpdate.price = price;
+    }
+    delete dataToUpdate.options;
+    delete dataToUpdate.choices;
+    delete dataToUpdate.thaioptions;
+  }
+
+  try {
+    await updateDoc(doc(db, `applebyline/${menuId}`), dataToUpdate);
+    alert("Item updated!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to update item.");
+  }
+};
+
+window.deleteItem = async function (btn) {
+  const menuId = document.getElementById("menuId").value;
+  if (!menuId) {
+    alert("Invalid menu item ID.");
+    return;
+  }
+
+  const confirmDelete = confirm("Are you sure you want to delete this menu item?");
+  if (!confirmDelete) return;
+
+  try {
+    await deleteDoc(doc(db, `applebyline/${menuId}`));
+    alert("Item deleted!");
+    // Optionally clear form
+    document.getElementById("updateForm").reset();
+    document.getElementById("optionsContainer").innerHTML = "";
+    document.getElementById("choicesContainer").innerHTML = "";
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete item.");
+  }
+};
+window.addOption = function (name = "", price = "", thai = "") {
+  const optionsContainer = document.getElementById("optionsContainer");
+  const index = optionsContainer.children.length;
+
+  const block = document.createElement("div");
+  block.className = "option-block";
+  block.innerHTML = `
+    <input type="text" name="optionName-${index}" value="${name}" placeholder="Option Name" class="field-style field-split align-left" />
+    <input type="number" name="optionPrice-${index}" value="${price}" step=".01" placeholder="Price" class="field-style field-split align-left" />
+    <input type="text" name="thaiOption-${index}" value="${thai}" placeholder="Thai Name" class="field-style field-split align-left" />
+    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-tiny w3-red">X</button>
+    <br />
+  `;
+  optionsContainer.appendChild(block);
+};
+window.addChoice = function (name = "", price = "") {
+  const choicesContainer = document.getElementById("choicesContainer");
+  const index = choicesContainer.children.length;
+
+  const block = document.createElement("div");
+  block.className = "choice-block";
+  block.innerHTML = `
+    <input type="text" name="choiceName-${index}" value="${name}" placeholder="Choice Label" class="field-style field-split align-left" />
+    <input type="number" name="choicePrice-${index}" value="${price}" step=".01" placeholder="Price" class="field-style field-split align-left" />
+    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-tiny w3-red">X</button>
+    <br />
+  `;
+  choicesContainer.appendChild(block);
+};
+
+// Sidebar toggle
+window.w3_open = function () {
   document.getElementById("mySidebar").style.display = "block";
   document.getElementById("myOverlay").style.display = "block";
-}
+};
 
-function w3_close() {
+window.w3_close = function () {
   document.getElementById("mySidebar").style.display = "none";
   document.getElementById("myOverlay").style.display = "none";
+};
+
+// Highlight category
+window.highlight = function (id) {
+  const section = document.getElementById(id);
+  if (section) section.classList.toggle("w3-hide");
+};
+
+// Logout
+window.signMeOut = function () {
+  signOut(auth)
+    .then(() => location.assign("login.html"))
+    .catch((error) => {
+      alertify.error("Sign-out failed");
+      console.error(error);
+    });
+};
+
+window.renderOptions = function(options, thaioptions) {
+  const container = document.getElementById("optionsContainer");
+  container.innerHTML = ""; // clear existing
+
+  Object.entries(options).forEach(([key, price]) => {
+    const thaiName = thaioptions?.[key] || "";
+
+    const optionBlock = document.createElement("div");
+    optionBlock.style.marginBottom = "12px";
+
+    optionBlock.innerHTML = `
+      <label>${key}</label><br>
+      <input
+        type="number"
+        name="price-${key}"
+        step="0.01"
+        class="field-style field-full align-none"
+        placeholder="Price for ${key}"
+        value="${price}"
+      />
+      <input
+        type="text"
+        name="thai-${key}"
+        class="field-style field-full align-none"
+        placeholder="Thai Name for ${key}"
+        value="${thaiName}"
+      />
+    `;
+
+    container.appendChild(optionBlock);
+  });
 }
 
-function highlight(e) {
-  var id = e.id;
-  var x = document.getElementById(id);
-  if (x.className.indexOf("w3-show") == -1) {
-      x.className += " w3-show";
-      x.previousElementSibling.className += " w3-pale-green";
-  } else {
-      x.className = x.className.replace(" w3-show", "");
-      x.previousElementSibling.className =
-          x.previousElementSibling.className.replace(" w3-pale-green", "");
+window.toggleNewMenuForm = function() {
+  const form = document.getElementById("createForm");
+  const categorySelect = document.getElementById("newMenuCategory");
+
+  form.style.display = form.style.display === "none" ? "block" : "none";
+
+  // Populate categories if not already populated
+  if (categorySelect.options.length <= 1) {
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat.key;
+      option.textContent = cat.name;
+      categorySelect.appendChild(option);
+    });
   }
 }
 
-function openMenu(menu) {
-
-  var showImage = document.getElementById('showImage');
-  var showName = document.getElementById('showName');
-  var menuName = document.getElementById('menuName');
-  var menuId = document.getElementById('menuId');
-  var menuImage = document.getElementById('menuImage');
-  var menuPrice = document.getElementById('menuPrice');
-  var menuThaiName = document.getElementById('menuThaiName');
-  var cateId = document.getElementById('menuCateId');
-  var menuDescription = document.getElementById('menuDescription');
-  var menuSpiceLevel = document.getElementById('menuSpiceLevel');
-
-  var menuUrl = 'bahnthai-menus/' + menu.cateId.toString() + '/items';
-
-  //var db = firebase.firestore();
-  var db = firebase.firestore();
-
-
-  db.collection(menuUrl).doc(menu.id.toString()).get().then(function(doc){
-
-      showName.innerText = doc.data().name;
-      showImage.src = doc.data().image;
-
-      menuName.value = doc.data().name;
-      menuId.value = doc.id;
-      menuImage.value = doc.data().image;
-      menuPrice.value = doc.data().price;
-      menuThaiName.value = doc.data().thainame;
-      cateId.value = menu.cateId;
-      menuDescription.value = doc.data().description;
-      menuSpiceLevel.value = doc.data().spice_level;
-
-  }).catch(function(err){
-     alertify.error(err);
-  });
-
+window.addNewOption = function() {
+  const container = document.getElementById("newOptionsContainer");
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <input type="text" placeholder="Option Name" class="newOptionName" />
+    <input type="text" placeholder="Thai Name" class="newThaiName" />
+    <input type="number" placeholder="Price" step="0.01" class="newOptionPrice" />
+    <button type="button" onclick="this.parentElement.remove()">🗑️</button>
+  `;
+  container.appendChild(div);
 }
 
-function updateItem(e){
-  var db = firebase.firestore();
-  var data = {};
-  var menuId = document.getElementById('menuId').value.toString();
-  var cateId = document.getElementById('menuCateId').value.toString();
+window.addNewChoice = function() {
+  const container = document.getElementById("newChoicesContainer");
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <input type="text" placeholder="Choice Label" class="newChoiceName" />
+    <input type="number" placeholder="Price" step="0.01" class="newChoicePrice" />
+    <button type="button" onclick="this.parentElement.remove()">🗑️</button>
+  `;
+  container.appendChild(div);
+}
+window.createItem = async function () {
+  const name = document.getElementById("newMenuName").value.trim();
+  const category = document.getElementById("newMenuCategory").value.trim();
+  const description = document.getElementById("newMenuDescription").value.trim();
+  const price = parseFloat(document.getElementById("newMenuPrice").value);
 
-  data.name = document.getElementById('menuName').value;
-  data.image = document.getElementById('menuImage').value;
-  data.price = document.getElementById('menuPrice').value;
-  data.thainame = document.getElementById('menuThaiName').value;
-  data.description = document.getElementById('menuDescription').value;
-  data.spice_level = document.getElementById('menuSpiceLevel').value;
+  const options = {};
+  const thaioptions = {};
+  const optionNameEls = document.getElementsByClassName("newOptionName");
+  const optionThaiEls = document.getElementsByClassName("newThaiName");
+  const optionPriceEls = document.getElementsByClassName("newOptionPrice");
 
+  for (let i = 0; i < optionNameEls.length; i++) {
+    const optName = optionNameEls[i].value.trim();
+    const optThai = optionThaiEls[i].value.trim();
+    const optPrice = parseFloat(optionPriceEls[i].value);
+    if (optName && !isNaN(optPrice)) {
+      options[optName] = optPrice;
+      thaioptions[optName] = optThai;
+    }
+  }
 
+  const choices = {};
+  const choiceNameEls = document.getElementsByClassName("newChoiceName");
+  const choicePriceEls = document.getElementsByClassName("newChoicePrice");
 
-  var dbUrl = 'bahnthai-menus/' + cateId.toString() + '/items';
+  for (let i = 0; i < choiceNameEls.length; i++) {
+    const choiceName = choiceNameEls[i].value.trim();
+    const choicePrice = parseFloat(choicePriceEls[i].value);
+    if (choiceName && !isNaN(choicePrice)) {
+      choices[choiceName] = choicePrice;
+    }
+  }
 
-  db.collection(dbUrl).doc(menuId.toString()).set(data).then(function(){
-      alertify.success('Successfully updated');
-  }).catch(function(err){
-      alertify.error(err);
-  });
+  if (!name || !category) {
+    alert("Name and Category are required.");
+    return;
+  }
 
+  const newItem = {
+    name,
+    category,
+    description,
+    order: Date.now(), // You can replace with manual input if needed
+  };
+
+  if (Object.keys(options).length > 0) {
+    newItem.options = options;
+    newItem.thaioptions = thaioptions;
+  } else if (Object.keys(choices).length > 0) {
+    newItem.choices = choices;
+  } else if (!isNaN(price)) {
+    newItem.price = price;
+  }
+
+  try {
+    await addDoc(collection(db, "applebyline"), newItem);
+    alert("New menu item added successfully!");
+    resetCreateForm();
+    toggleNewMenuForm(); // Hide the form again
+  } catch (error) {
+    console.error("Error adding item:", error);
+    alert("Failed to add new item.");
+  }
+};
+
+function resetCreateForm() {
+  document.getElementById("createForm").reset();
+  document.getElementById("newOptionsContainer").innerHTML = "";
+  document.getElementById("newChoicesContainer").innerHTML = "";
 }
 
-function deleteItem(e){
-
-  var db = firebase.firestore();
-
-  var menuId = document.getElementById('menuId').value;
-  var cateId = document.getElementById('menuCateId').value;
-
-  var dbUrl = 'applebyline/' + Id;
-
-  alertify.confirm("Removing","Do you really want to delete this product?",
-      function(){
-          db.collection(dbUrl).doc(menuId.toString()).delete().then(function() {
-              location.reload();
-              alertify.warning("Menu deleted!");
-          }).catch(function(error) {
-              alertify.error("Error removing Menu: ", error);
-          });
-      },
-      function(){
-          alertify.error('Cancel');
-      });
-
-
-
-}
-
-function addProduct(){
-
-  var db = firebase.firestore();
-
-  var f = document.getElementById('newProductForm');
-  var data = {};
-  data.name = f.newMenuName.value;
-  data.thainame = f.newMenuThainame.value;
-  data.image = f.newMenuImage.value;
-  data.price = f.newMenuPrice.value;
-  data.spicy_level = f.newMenuSpiceLevel.value;
-  data.description = f.newMenuDescription.value;
-
-  var url = "bahnthai-menus/" + f.newMenuCate.value.toString() + "/items";
-  console.log(url);
-
-  db.collection(url).get().then(function(snaps){
-      db.collection(url).doc(snaps.size.toString()).set(data).then(function(){
-          document.getElementById('id01').style.display='none';
-          alertify.success("Product successfully added.");
-      }).catch(function(err){
-          alertify.error(err.message);
-      });
-  });
-
-
-  //
-}
-
-function addBulk(){
-
-  $.getJSON("data.json", function(result){
-      $.each(result, function(n, cate){
-
-          db.collection("bahnthai-menus").doc(n.toString()).set({name:cate.category});
-          var subCol = 'bahnthai-menus/' + n + '/items';
-
-          $.each(cate.menus, function(i, item){
-              db.collection(subCol).doc(i.toString()).set(item);
-          });
-      });
-  });
-}
-
-
- 

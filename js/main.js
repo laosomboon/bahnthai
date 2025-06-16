@@ -676,5 +676,6 @@ function initMap() {
 
 
 function goToAddmin() {
-    window.location.replace("https://console.firebase.google.com/u/3/project/bahnthai-2ea23/firestore/data/~2Fapplebyline~2FVp32B5NQjCmAawtgarHw");
+    window.location.assign("/login.html");
+    // window.location.replace("https://console.firebase.google.com/u/3/project/bahnthai-2ea23/firestore/data/~2Fapplebyline~2FVp32B5NQjCmAawtgarHw");
 }

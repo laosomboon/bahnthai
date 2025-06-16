@@ -7,13 +7,13 @@
 
 
 <!-- alertify css -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css"/>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
 <!-- Default theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/default.min.css"/>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/default.min.css" />
 <!-- Semantic UI theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/semantic.min.css"/>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/semantic.min.css" />
 <!-- Bootstrap theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/bootstrap.min.css"/>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/bootstrap.min.css" />
 
 <!-- end Alertify setup -->
 
@@ -29,7 +29,8 @@
 <body>
 
     <!-- Side Navigation -->
-    <nav class="w3-sidebar w3-bar-block w3-collapse w3-white w3-animate-left w3-card" style="z-index:3;width:320px;" id="mySidebar">
+    <nav class="w3-sidebar w3-bar-block w3-collapse w3-white w3-animate-left w3-card" style="z-index:3;width:320px;"
+        id="mySidebar">
         <a href="/" class="w3-bar-item w3-border-bottom" style="background: blue;">
             <img src="/images/indexlogo.png" style="width:25%;">
             <i class="fa fa-remove w3-button w3-right w3-red  w3-hide-large w3-large" onclick="w3_close();"></i>
@@ -37,7 +38,10 @@
         <!-- <a href="javascript:void(0)"
            class="w3-bar-item w3-button w3-dark-grey w3-button w3-hover-black w3-left-align"
            onclick="document.getElementById('id01').style.display='block'">New Product<i class="w3-padding fa fa-plus"></i></a> -->
-        <div id="SidenavContainer"></div>
+        <div id="SidenavContainer">
+            <h4 class="w3-bar-item">Menu Categories</h4>
+        </div>
+
     </nav>
 
     <!-- Modal that pops up when you click on "New Product" -->
@@ -101,58 +105,123 @@
 
 
 
-    
+
 
     <!-- Overlay effect when opening the side navigation on small screens -->
-    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close Sidemenu" id="myOverlay"></div>
+    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+        title="Close Sidemenu" id="myOverlay"></div>
 
     <!-- Page content -->
     <div class="w3-main" style="margin-left:320px;">
-        <button style="display:inline-block;float:right;margin:20px 20px 0" class="w3-btn w3-small w3-red" onclick="signMeOut()">Logout</button>
-        <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
+        <button id="logoutBtn" style="display:inline-block;float:right;margin:20px 20px 0"
+            class="w3-btn w3-small w3-red" onclick="signMeOut()">Logout</button>
+        <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top"
+            onclick="w3_open()"></i>
         <!--<a href="javascript:void(0)" class="w3-hide-large w3-red w3-button w3-right w3-margin-top w3-margin-right" onclick="document.getElementById('id01').style.display='block'">-->
-            <!--<i class="fa fa-pencil"></i></a>-->
+        <!--<i class="fa fa-pencil"></i></a>-->
 
         <div id="formWrapper" class="w3-container person">
             <div class="container w3-padding w3-large w3-pale-blue">
-                <img class="w3-round" id="showImage" src="" alt="" width="70" style="display: inline-block;">&nbsp;&nbsp;&nbsp;
-                <h2 id="showName"  style="display: inline-block;"></h2>
+                <img class="w3-round" id="showImage" src="" alt="" width="70"
+                    style="display: inline-block;">&nbsp;&nbsp;&nbsp;
+                <h2 id="showName" style="display: inline-block;"></h2>
             </div>
-            </div>
+            <!-- New Menu Item Button -->
+            <button class="w3-btn w3-green w3-margin-top" onclick="toggleNewMenuForm()">+ New Menu Item</button>
 
-                <form class="form-style-9" onsubmit="return false;" id="updateForm">
-                    <ul>
-                        <li>
-                            <input type="hidden" id="menuId" value="" />
-                            <input type="text" id="menuName" name="name" class="field-style field-full align-none" placeholder="Name" />
-                        </li>
-                        <li>
-                            <input type="text" id="menuImage" name="image" class="field-style field-full align-none" placeholder="Image Url" />
-                        </li>
-                        <li>
-                            <input type="text" id="menuThaiName" name="thainame" class="field-style field-full align-none" placeholder="Thai name" />
-                        </li>
-                        <li>
-                            <input type="number" id="menuPrice" name="price" step=".01" class="field-style field-full align-none" placeholder="Price (ex : 9.95)" />
-                        </li>
-                        <li>
-                            <p><input class="w3-input w3-border w3-col-6" id="menuSpiceLevel" type="number" name="spice_level" placeholder="Spice Level (0-5)" value="" min="0" max="5"></p>
-                        </li>
-                            <input type="hidden" id="menuCateId" type="number" name="cateId"  value="" />
-                        <li>
-                            <textarea name="description" class="field-style" id="menuDescription" placeholder="description"></textarea>
-                        </li>
-                        <li>
-                            <button class="w3-btn w3-small w3-teal" onclick="updateItem(this);">Update</button>
-                            <button class="w3-btn w3-small w3-red" onclick="deleteItem(this);">Delete</button>
-                        </li>
-                    </ul>
-                </form>
+            <!-- Hidden Form -->
+            <form id="createForm" class="form-style-9 w3-margin-top" style="display: none;" onsubmit="return false;">
+                <ul>
+                    <li><input type="text" id="newMenuName" placeholder="Name" class="field-style field-full" /></li>
 
-     </div>
+                    <li>
+                        <select id="newMenuCategory" class="field-style field-full">
+                            <option value="">-- Select Category --</option>
+                            <!-- Will be dynamically populated -->
+                        </select>
+                    </li>
+
+                    <li><textarea id="newMenuDescription" placeholder="Description" class="field-style"
+                            rows="3"></textarea></li>
+                    <li><input type="number" id="newMenuPrice" step="0.01" placeholder="Price (if no options/choices)"
+                            class="field-style field-full" /></li>
+
+                    <li>
+                        <label><strong>Options (Thai name and price)</strong></label>
+                        <div id="newOptionsContainer"></div>
+                        <button type="button" onclick="addNewOption()">+ Add Option</button>
+                    </li>
+
+                    <li>
+                        <label><strong>Choices (label and price)</strong></label>
+                        <div id="newChoicesContainer"></div>
+                        <button type="button" onclick="addNewChoice()">+ Add Choice</button>
+                    </li>
+
+                    <li>
+                        <button class="w3-btn w3-small w3-green" onclick="createItem()">Create</button>
+                        <button class="w3-btn w3-small w3-gray" type="button"
+                            onclick="toggleNewMenuForm()">Cancel</button>
+                    </li>
+                </ul>
+            </form>
+
+
+            <form class="form-style-9" onsubmit="return false;" id="updateForm">
+                <ul>
+                    <li>
+                        <input type="hidden" id="menuId" name="id" value="" />
+                    </li>
+
+                    <li>
+                        <label for="menuName"><strong>Name</strong></label>
+                        <input type="text" id="menuName" name="name" class="field-style field-full align-none"
+                            placeholder="Name" />
+                    </li>
+
+                    <li>
+                        <label for="menuDescription"><strong>Description</strong></label>
+                        <textarea id="menuDescription" name="description" class="field-style" placeholder="Description"
+                            rows="3"></textarea>
+                    </li>
+
+                    <!-- For options -->
+                    <li id="optionsWrapper" style="display:none;">
+                        <label><strong>Options (Price + Thai Name)</strong></label>
+                        <div id="optionsContainer"></div>
+                        <button type="button" onclick="addOption()">+ Add Option</button>
+                    </li>
+
+                    <!-- For choices -->
+                    <li id="choicesWrapper" style="display:none;">
+                        <label><strong>Choices (Size or Set)</strong></label>
+                        <div id="choicesContainer"></div>
+                        <button type="button" onclick="addChoice()">+ Add Choice</button>
+                    </li>
+
+                    <!-- Single price -->
+                    <li id="singlePriceWrapper" style="display:none;">
+                        <input type="number" id="menuPrice" name="price" step=".01"
+                            class="field-style field-full align-none" placeholder="Price" />
+                    </li>
+
+
+
+                    <li>
+                        <button class="w3-btn w3-small w3-teal" onclick="updateItem(this);" type="submit">
+                            Update
+                        </button>
+                        <button class="w3-btn w3-small w3-red" onclick="deleteItem(this);" type="button">
+                            Delete
+                        </button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
 
     </div>
-    
+
 
 
 
@@ -174,13 +243,12 @@
 
     <!-- Flexslider -->
     <script src="js/jquery.flexslider-min.js"></script>
-       
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
     <!-- Main JS -->
     <script type="module" src="js/initfirebase.js"></script>
-    <script type="module" src="js/admin.js"></script>
-
+    <!-- <script type="module" src="js/admin.js"></script> -->
 
 </body>
 
