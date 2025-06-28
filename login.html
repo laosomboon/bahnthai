@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 
-
     <style>
         /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
 
@@ -198,6 +197,10 @@
         </form>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore-compat.js"></script>
+
     <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
     <!-- jQuery Easing -->
@@ -215,40 +218,10 @@
     <!-- Flexslider -->
     <script src="js/jquery.flexslider-min.js"></script>
 
-    <!-- Load Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-messaging.js"></script>
-    <script>
+    <script src="js/firebaseConfig.js"></script>
 
-        // const firebaseConfig = {
-        //     apiKey: "AIzaSyAef28MOvO7MHVZZJBvIYY7UI_oetbf85Q",
-        //     authDomain: "bahnthai-menu.firebaseapp.com",
-        //     projectId: "bahnthai-menu",
-        //     storageBucket: "bahnthai-menu.appspot.com",
-        //     messagingSenderId: "740062677914",
-        //     appId: "1:740062677914:web:33d96138433e5bb0f8c823",
-        //     measurementId: "G-J6SKHHHYRX"
-        // };
-        const firebaseConfig = {
-            apiKey: "AIzaSyBFGsDVtTUs6_nB8nfaW5EhceJ7BlE3_F4",
-            authDomain: "bahnthai-2ea23.firebaseapp.com",
-            projectId: "bahnthai-2ea23",
-            storageBucket: "bahnthai-2ea23.firebasestorage.app",
-            messagingSenderId: "134991899936",
-            appId: "1:134991899936:web:525833efd42d3f36b83b45",
-            measurementId: "G-Z3L1GBGT5B"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
-    <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
-    <!-- Main JS -->
-    <script type="text/javascript" src="js/login.js"></script>
+    <!-- Your JS file -->
+    <script src="js/login.js"></script>
 
 </body>
 

@@ -128,7 +128,12 @@
             </div>
             <!-- New Menu Item Button -->
             <button class="w3-btn w3-green w3-margin-top" onclick="toggleNewMenuForm()">+ New Menu Item</button>
-
+            <button
+              id="generatePdfBtn"
+              class="w3-btn w3-blue w3-margin-top"
+            >
+              Generate & Publish PDF
+            </button>
             <!-- Hidden Form -->
             <form id="createForm" class="form-style-9 w3-margin-top" style="display: none;" onsubmit="return false;">
                 <ul>
@@ -225,7 +230,7 @@
 
 
 
- <script type="module" src="js/admin.js"></script>
+ 
 
     <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
@@ -246,9 +251,18 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Main JS -->
-    <script src="js/initfirebase.js"></script> -->
-    <!-- <script src="js/admin.js"></script> -->
+    <!-- ✅ Your Firebase config file -->
+    <script src="js/firebaseConfig.js"></script>
+    <!-- <script src="js/initfirebase.js"></script> --> -->
+    <script src="js/admin.js"></script>
 
 </body>
 

@@ -1,39 +1,5 @@
-// Firebase imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged , signOut } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
-  getDoc,
-  setDoc,
-  deleteDoc,
-  getDocs,
-  addDoc,
-  updateDoc,
-} from "https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js";
 
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBFGsDVtTUs6_nB8nfaW5EhceJ7BlE3_F4",
-  authDomain: "bahnthai-2ea23.firebaseapp.com",
-  projectId: "bahnthai-2ea23",
-  storageBucket: "bahnthai-2ea23.firebasestorage.app",
-  messagingSenderId: "134991899936",
-  appId: "1:134991899936:web:525833efd42d3f36b83b45",
-  measurementId: "G-Z3L1GBGT5B"
-};
-
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Categories definition
+// Category definitions
 const categories = [
   { name: "Appetizers", key: "Appetizer", order: 1 },
   { name: "Barbeque", key: "Barbeque", order: 4 },
@@ -42,480 +8,371 @@ const categories = [
   { name: "Noodle Dishes", key: "Noodle Dishes", order: 8 },
   { name: "Rice Dishes", key: "Rice Dishes", order: 9 },
   { name: "Soups", key: "Soup", order: 2 },
-  { name: "Thai Desserts", key: "Specialty Thai Desserts" },
-  { name: "Stir-fired Dishes", key: "Stir-fried Dishes", order: 5 },
+  { name: "Thai Desserts", key: "Specialty Thai Desserts", order: 11 },
+  { name: "Stir‑fried Dishes", key: "Stir‑fried Dishes", order: 5 },
   { name: "Thai curries", key: "Thai Curries", order: 4 },
   { name: "Thai Salads", key: "Thai Salads", order: 3 },
   { name: "Vegetable", key: "Vegetables", order: 7 },
 ];
 
-// Real-time menu population
-const colRef = collection(db, "applebyline");
-const q = query(colRef, orderBy("order"));
 
-onSnapshot(q, (snap) => {
-  const validKeys = categories.map(c => c.key);
-  const menus = snap.docs
-    .map(doc => ({ ...doc.data(), id: doc.id }))
-    .filter(m => validKeys.includes(m.category));
+// Enforce admin access
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (!user) return window.location.assign('login.html');
+  const token = await user.getIdTokenResult();
+  if (!token.claims.isAdmin) {
+    alert('Access denied: Admins only!');
+    await firebase.auth().signOut();
+    return window.location.assign('login.html');
+  }
+  initMenuListener();
+});
 
-  const sideNav = document.getElementById("SidenavContainer");
-  sideNav.innerHTML = "";
+// Real‑time menu listener
+function initMenuListener() {
+  firebase.firestore().collection('applebyline').orderBy('order')
+    .onSnapshot(snapshot => {
+      const menus = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderSideNav(menus);
+    });
+}
 
-  const sortedCategories = [...categories].sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+// Sidebar rendering
+function renderSideNav(menus) {
+  const sideNav = document.getElementById('SidenavContainer');
+  sideNav.innerHTML = '';
+  const sorted = categories.slice().sort((a, b) => (a.order || 999) - (b.order || 999));
 
-  sortedCategories.forEach(cat => {
-    const filtered = menus.filter(m => m.category === cat.key);
-    if (!filtered.length) return;
+  sorted.forEach(cat => {
+    const items = menus.filter(m => m.category === cat.key);
+    if (!items.length) return;
+    const id = cat.key.replace(/\W+/g, '');
 
-    const cateId = cat.key.replace(/[^a-zA-Z0-9]/g, "");
+    const a = document.createElement('a');
+    a.className = 'w3-bar-item w3-button';
+    a.textContent = cat.name;
+    a.onclick = () => toggleSection(id);
+    a.innerHTML += '<i class="fa fa-caret-down w3-margin-left"></i>';
 
-    const a = document.createElement("a");
-    a.id = cateId + "Btn";
-    a.href = "javascript:void(0)";
-    a.classList.add("w3-bar-item", "w3-button");
-    a.onclick = () => highlight(cateId);
-    a.innerText = cat.name;
+    const div = document.createElement('div');
+    div.id = id;
+    div.className = 'w3-hide w3-animate-left';
 
-    const i = document.createElement("i");
-    i.classList.add("fa", "fa-caret-down", "w3-margin-left");
-    a.appendChild(i);
-
-    const div = document.createElement("div");
-    div.id = cateId;
-    div.classList.add("w3-hide", "w3-animate-left");
-
-    filtered.forEach(menu => {
-      
-      const innerA = document.createElement("a");
-      innerA.href = "javascript:void(0)";
-      innerA.classList.add("w3-bar-item", "w3-button", "w3-border-bottom", "w3-hover-light-grey");
-      innerA.innerText = menu.name;
-      innerA.style.cssText = "font: .7em Arial, sans-serif; color:blue";
-      innerA.onclick = () => openMenu(menu);
-      div.appendChild(innerA);
+    items.forEach(menu => {
+      const x = document.createElement('a');
+      x.className = 'w3-bar-item w3-button w3-border-bottom w3-hover-light-grey';
+      x.style.cssText = 'font:.7em Arial;color:blue';
+      x.textContent = menu.name;
+      x.onclick = () => openMenu(menu);
+      div.appendChild(x);
     });
 
     sideNav.appendChild(a);
     sideNav.appendChild(div);
   });
-});
+}
 
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('w3-hide');
+}
 
-// Menu view handler
-window.openMenu = async function (menu) {
-  const menuId = document.getElementById("menuId");
-  const menuName = document.getElementById("menuName");
-  const menuDescription = document.getElementById("menuDescription");
-  const menuPrice = document.getElementById("menuPrice");
-  const optionsWrapper = document.getElementById("optionsWrapper");
-  const choicesWrapper = document.getElementById("choicesWrapper");
-  const singlePriceWrapper = document.getElementById("singlePriceWrapper");
-  const optionsContainer = document.getElementById("optionsContainer");
-  const choicesContainer = document.getElementById("choicesContainer");
-
-  // Clear existing dynamic fields
-  optionsContainer.innerHTML = "";
-  choicesContainer.innerHTML = "";
-  menuPrice.value = "";
-
-  const docRef = doc(db, `applebyline/${menu.id}`);
-  const docSnap = await getDoc(docRef);
-
-  if (!docSnap.exists()) {
-    alert("Menu item not found.");
-    return;
-  }
-
+// Load selected menu into form
+async function openMenu(menu) {
+  const docSnap = await firebase.firestore().doc(`applebyline/${menu.id}`).get();
+  if (!docSnap.exists) return alert('Item not found');
   const data = docSnap.data();
+  document.getElementById('menuId').value = menu.id;
+  document.getElementById('menuName').value = data.name || '';
+  document.getElementById('menuDescription').value = data.description || '';
+  document.getElementById('menuPrice').value = data.price || '';
+  document.getElementById('optionsContainer').innerHTML = '';
+  document.getElementById('choicesContainer').innerHTML = '';
 
-  // Basic fields
-  menuId.value = menu.id;
-  menuName.value = data.name || "";
-  menuDescription.value = data.description || "";
-
-  // Determine pricing type
   if (data.options) {
-    optionsWrapper.style.display = "block";
-    choicesWrapper.style.display = "none";
-    singlePriceWrapper.style.display = "none";
-
-    for (const [optionName, price] of Object.entries(data.options)) {
-      const thaiName = data.thaioptions?.[optionName] || "";
-      addOption(optionName, price, thaiName);
-    }
+    document.getElementById('optionsWrapper').style.display = 'block';
+    document.getElementById('choicesWrapper').style.display = 'none';
+    document.getElementById('singlePriceWrapper').style.display = 'none';
+    Object.entries(data.options).forEach(([opt, p]) => addOption(opt, p, data.thaioptions?.[opt]));
   } else if (data.choices) {
-    choicesWrapper.style.display = "block";
-    optionsWrapper.style.display = "none";
-    singlePriceWrapper.style.display = "none";
-
-    for (const [choice, price] of Object.entries(data.choices)) {
-      addChoice(choice, price);
-    }
-  } else if (data.price) {
-    singlePriceWrapper.style.display = "block";
-    optionsWrapper.style.display = "none";
-    choicesWrapper.style.display = "none";
-
-    menuPrice.value = data.price;
+    document.getElementById('optionsWrapper').style.display = 'none';
+    document.getElementById('choicesWrapper').style.display = 'block';
+    document.getElementById('singlePriceWrapper').style.display = 'none';
+    Object.entries(data.choices).forEach(([ch, p]) => addChoice(ch, p));
   } else {
-    // default fallback
-    singlePriceWrapper.style.display = "block";
-    optionsWrapper.style.display = "none";
-    choicesWrapper.style.display = "none";
+    document.getElementById('optionsWrapper').style.display = 'none';
+    document.getElementById('choicesWrapper').style.display = 'none';
+    document.getElementById('singlePriceWrapper').style.display = 'block';
   }
-};
+}
 
-// Add new Option block
-function addOption(name = "", price = "", thaiName = "") {
-  const container = document.getElementById("optionsContainer");
-  const optionIndex = container.children.length;
-
-  const div = document.createElement("div");
-  div.classList.add("option-block");
-  div.style.marginBottom = "1rem";
-
+// UI helper for options/choices
+function addOption(name = '', price = '', thaiName = '') {
+  const container = document.getElementById('optionsContainer');
+  const i = container.children.length;
+  const div = document.createElement('div');
+  div.className = 'option-block';
   div.innerHTML = `
-    <label>Option Name</label><br />
-    <input type="text" name="optionName-${optionIndex}" class="field-style field-full" value="${name}" />
-
-    <label>Price</label><br />
-    <input type="number" name="optionPrice-${optionIndex}" step="0.01" class="field-style field-full" value="${price}" />
-
-    <label>Thai Name</label><br />
-    <input type="text" name="thaiOption-${optionIndex}" class="field-style field-full" value="${thaiName}" />
-
-    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-small w3-red">Remove</button>
+    <input name="optionName-${i}" value="${name}" placeholder="Option Name" />
+    <input type="number" name="optionPrice-${i}" step="0.01" value="${price}" placeholder="Price" />
+    <input name="thaiOption-${i}" value="${thaiName}" placeholder="Thai Name" />
+    <button onclick="this.parentElement.remove()">Remove</button>
     <hr />
   `;
-
+  container.appendChild(div);
+}
+function addChoice(name = '', price = '') {
+  const container = document.getElementById('choicesContainer');
+  const i = container.children.length;
+  const div = document.createElement('div');
+  div.className = 'choice-block';
+  div.innerHTML = `
+    <input name="choiceName-${i}" value="${name}" placeholder="Choice Label" />
+    <input type="number" name="choicePrice-${i}" step="0.01" value="${price}" placeholder="Price" />
+    <button onclick="this.parentElement.remove()">Remove</button>
+    <hr />
+  `;
   container.appendChild(div);
 }
 
-// Add new Choice block
-function addChoice(name = "", price = "") {
-  const container = document.getElementById("choicesContainer");
-  const choiceIndex = container.children.length;
+// Update item
+window.updateItem = async () => {
+  const id = document.getElementById('menuId').value;
+  if (!id) return alert('Please select an item.');
 
-  const div = document.createElement("div");
-  div.classList.add("choice-block");
-  div.style.marginBottom = "1rem";
-
-  div.innerHTML = `
-    <label>Choice Name</label><br />
-    <input type="text" name="choiceName-${choiceIndex}" class="field-style field-full" value="${name}" />
-
-    <label>Price</label><br />
-    <input type="number" name="choicePrice-${choiceIndex}" step="0.01" class="field-style field-full" value="${price}" />
-
-    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-small w3-red">Remove</button>
-    <hr />
-  `;
-
-  container.appendChild(div);
-}
-
-window.updateItem = async function (btn) {
-
-  const menuId = document.getElementById("menuId").value;
-  const name = document.getElementById("menuName").value.trim();
-  const description = document.getElementById("menuDescription").value.trim();
-  const price = parseFloat(document.getElementById("menuPrice").value);
-
-  const optionsWrapper = document.getElementById("optionsWrapper");
-  const choicesWrapper = document.getElementById("choicesWrapper");
- 
-  const dataToUpdate = {
-    name,
-    description,
-    order: 0, // optionally keep or update ordering logic
+  const payload = {
+    name: document.getElementById('menuName').value.trim(),
+    description: document.getElementById('menuDescription').value.trim(),
+    order: Date.now(),
   };
 
-
-  // --- OPTIONS ---
-  if (optionsWrapper.style.display === "block") {
-    const optionBlocks = document.querySelectorAll("#optionsContainer .option-block");
-    const options = {};
-    const thaioptions = {};
-
-    optionBlocks.forEach((block, i) => {
-      const optionName = block.querySelector(`[name^="optionName-"]`).value.trim();
-      const optionPrice = parseFloat(block.querySelector(`[name^="optionPrice-"]`).value);
-      const thaiName = block.querySelector(`[name^="thaiOption-"]`).value.trim();
-
-      if (optionName && !isNaN(optionPrice)) {
-        options[optionName] = optionPrice;
-        if (thaiName) thaioptions[optionName] = thaiName;
+  if (document.getElementById('optionsWrapper').style.display === 'block') {
+    payload.options = {};
+    payload.thaioptions = {};
+    document.querySelectorAll('#optionsContainer .option-block').forEach(div => {
+      const nm = div.querySelector('input[name^="optionName-"]').value.trim();
+      const pr = parseFloat(div.querySelector('input[name^="optionPrice-"]').value);
+      const th = div.querySelector('input[name^="thaiOption-"]').value.trim();
+      if (nm && !isNaN(pr)) {
+        payload.options[nm] = pr;
+        if (th) payload.thaioptions[nm] = th;
       }
     });
-
-    dataToUpdate.options = options;
-    if (Object.keys(thaioptions).length > 0) {
-      dataToUpdate.thaioptions = thaioptions;
-    }
-    delete dataToUpdate.price;
-    delete dataToUpdate.choices;
-  }
-
-  // --- CHOICES ---
-  else if (choicesWrapper.style.display === "block") {
-    const choiceBlocks = document.querySelectorAll("#choicesContainer .choice-block");
-    const choices = {};
-
-    choiceBlocks.forEach((block, i) => {
-      const choiceName = block.querySelector(`[name^="choiceName-"]`).value.trim();
-      const choicePrice = parseFloat(block.querySelector(`[name^="choicePrice-"]`).value);
-
-      if (choiceName && !isNaN(choicePrice)) {
-        choices[choiceName] = choicePrice;
-      }
+  } else if (document.getElementById('choicesWrapper').style.display === 'block') {
+    payload.choices = {};
+    document.querySelectorAll('#choicesContainer .choice-block').forEach(div => {
+      const nm = div.querySelector('input[name^="choiceName-"]').value.trim();
+      const pr = parseFloat(div.querySelector('input[name^="choicePrice-"]').value);
+      if (nm && !isNaN(pr)) payload.choices[nm] = pr;
     });
-
-    dataToUpdate.choices = choices;
-    delete dataToUpdate.price;
-    delete dataToUpdate.options;
-    delete dataToUpdate.thaioptions;
+  } else {
+    const pr = parseFloat(document.getElementById('menuPrice').value);
+    if (!isNaN(pr)) payload.price = pr;
   }
 
-  // --- SINGLE PRICE ---
-  else {
-    if (!isNaN(price)) {
-      dataToUpdate.price = price;
+  await firebase.firestore().doc(`applebyline/${id}`).update(payload);
+  alert('Item updated!');
+};
+
+// Delete item
+window.deleteItem = async () => {
+  const id = document.getElementById('menuId').value;
+  if (!id || !confirm('Delete this item?')) return;
+  await firebase.firestore().doc(`applebyline/${id}`).delete();
+  alert('Item deleted.');
+};
+
+// Create new item
+window.createItem = async () => {
+  const name = document.getElementById('newMenuName').value.trim();
+  const category = document.getElementById('newMenuCategory').value;
+  const description = document.getElementById('newMenuDescription').value.trim();
+  const price = parseFloat(document.getElementById('newMenuPrice').value);
+
+  if (!name || !category) return alert('Name & Category are required.');
+
+  const payload = { name, category, description, order: Date.now() };
+
+  document.querySelectorAll('#newOptionsContainer .newOptionName').forEach((_, i) => {
+    const nm = document.getElementsByClassName('newOptionName')[i].value.trim();
+    const th = document.getElementsByClassName('newThaiName')[i].value.trim();
+    const pr = parseFloat(document.getElementsByClassName('newOptionPrice')[i].value);
+    if (nm && !isNaN(pr)) {
+      payload.options = payload.options || {};
+      payload.thaioptions = payload.thaioptions || {};
+      payload.options[nm] = pr;
+      payload.thaioptions[nm] = th;
     }
-    delete dataToUpdate.options;
-    delete dataToUpdate.choices;
-    delete dataToUpdate.thaioptions;
-  }
+  });
 
-  try {
-    await updateDoc(doc(db, `applebyline/${menuId}`), dataToUpdate);
-    alert("Item updated!");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to update item.");
-  }
+  document.querySelectorAll('#newChoicesContainer .newChoiceName').forEach((_, i) => {
+    const nm = document.getElementsByClassName('newChoiceName')[i].value.trim();
+    const pr = parseFloat(document.getElementsByClassName('newChoicePrice')[i].value);
+    if (nm && !isNaN(pr)) {
+      payload.choices = payload.choices || {};
+      payload.choices[nm] = pr;
+    }
+  });
+
+  if (!payload.options && !payload.choices && !isNaN(price)) payload.price = price;
+
+  await firebase.firestore().collection('applebyline').add(payload);
+  alert('New item created!');
+  if (typeof resetCreateForm === 'function') resetCreateForm();
 };
 
-window.deleteItem = async function (btn) {
-  const menuId = document.getElementById("menuId").value;
-  if (!menuId) {
-    alert("Invalid menu item ID.");
-    return;
-  }
 
-  const confirmDelete = confirm("Are you sure you want to delete this menu item?");
-  if (!confirmDelete) return;
-
-  try {
-    await deleteDoc(doc(db, `applebyline/${menuId}`));
-    alert("Item deleted!");
-    // Optionally clear form
-    document.getElementById("updateForm").reset();
-    document.getElementById("optionsContainer").innerHTML = "";
-    document.getElementById("choicesContainer").innerHTML = "";
-  } catch (err) {
-    console.error(err);
-    alert("Failed to delete item.");
-  }
-};
-window.addOption = function (name = "", price = "", thai = "") {
-  const optionsContainer = document.getElementById("optionsContainer");
-  const index = optionsContainer.children.length;
-
-  const block = document.createElement("div");
-  block.className = "option-block";
-  block.innerHTML = `
-    <input type="text" name="optionName-${index}" value="${name}" placeholder="Option Name" class="field-style field-split align-left" />
-    <input type="number" name="optionPrice-${index}" value="${price}" step=".01" placeholder="Price" class="field-style field-split align-left" />
-    <input type="text" name="thaiOption-${index}" value="${thai}" placeholder="Thai Name" class="field-style field-split align-left" />
-    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-tiny w3-red">X</button>
-    <br />
-  `;
-  optionsContainer.appendChild(block);
-};
-window.addChoice = function (name = "", price = "") {
-  const choicesContainer = document.getElementById("choicesContainer");
-  const index = choicesContainer.children.length;
-
-  const block = document.createElement("div");
-  block.className = "choice-block";
-  block.innerHTML = `
-    <input type="text" name="choiceName-${index}" value="${name}" placeholder="Choice Label" class="field-style field-split align-left" />
-    <input type="number" name="choicePrice-${index}" value="${price}" step=".01" placeholder="Price" class="field-style field-split align-left" />
-    <button type="button" onclick="this.parentElement.remove()" class="w3-btn w3-tiny w3-red">X</button>
-    <br />
-  `;
-  choicesContainer.appendChild(block);
-};
-
-// Sidebar toggle
-window.w3_open = function () {
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("myOverlay").style.display = "block";
-};
-
-window.w3_close = function () {
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("myOverlay").style.display = "none";
-};
-
-// Highlight category
-window.highlight = function (id) {
-  const section = document.getElementById(id);
-  if (section) section.classList.toggle("w3-hide");
-};
 
 // Logout
-window.signMeOut = function () {
-  signOut(auth)
-    .then(() => location.assign("login.html"))
-    .catch((error) => {
+window.signMeOut = function() {
+  auth.signOut()
+    .then(() => {
+      // Optionally display a message or redirect on successful logout
+      location.assign("login.html");
+    })
+    .catch(error => {
       alertify.error("Sign-out failed");
-      console.error(error);
+      console.error("Error signing out:", error);
     });
 };
 
-window.renderOptions = function(options, thaioptions) {
-  const container = document.getElementById("optionsContainer");
-  container.innerHTML = ""; // clear existing
 
-  Object.entries(options).forEach(([key, price]) => {
-    const thaiName = thaioptions?.[key] || "";
 
-    const optionBlock = document.createElement("div");
-    optionBlock.style.marginBottom = "12px";
+function formatPrice(price) {
+  if (typeof price !== 'number') {
+    // Try to convert price to number
+    price = Number(price);
+    if (isNaN(price)) {
+      throw new Error('Invalid price value');
+    }
+  }
+  return `$${price.toFixed(2)}`;
+}
 
-    optionBlock.innerHTML = `
-      <label>${key}</label><br>
-      <input
-        type="number"
-        name="price-${key}"
-        step="0.01"
-        class="field-style field-full align-none"
-        placeholder="Price for ${key}"
-        value="${price}"
-      />
-      <input
-        type="text"
-        name="thai-${key}"
-        class="field-style field-full align-none"
-        placeholder="Thai Name for ${key}"
-        value="${thaiName}"
-      />
-    `;
 
-    container.appendChild(optionBlock);
+
+
+async function generateStyledMenuPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Sort categories by order
+  categories.sort((a, b) => a.order - b.order);
+
+  // Set title of the PDF
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.text('Bahn Thai Menu', 14, 20);
+
+  let y = 30;
+
+  // Retrieve Firestore menu items
+  const snapshot = await firebase.firestore().collection('applebyline')
+                           .orderBy('order')
+                           .get();
+  const items = snapshot.docs.map(d => d.data());
+
+  // Insert each item by category (sorted order)
+  const catMap = {};
+  items.forEach(item => {
+    (catMap[item.category] ||= []).push(item);
   });
-}
 
-window.toggleNewMenuForm = function() {
-  const form = document.getElementById("createForm");
-  const categorySelect = document.getElementById("newMenuCategory");
+  categories.forEach(cat => {
+    const group = catMap[cat.key];
+    if (!group) return;
 
-  form.style.display = form.style.display === "none" ? "block" : "none";
+    // Category title with custom style (underlined and green)
+    doc.setFontSize(16);
+    doc.setTextColor(0, 128, 0); // Green color for category
+    doc.text(cat.name, 14, y);
+    doc.setLineWidth(0.5);
+    doc.line(14, y + 2, 195, y + 2); // Underline category name
+    y += 8;
 
-  // Populate categories if not already populated
-  if (categorySelect.options.length <= 1) {
-    categories.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat.key;
-      option.textContent = cat.name;
-      categorySelect.appendChild(option);
+    // Reset the text color for the menu items (black)
+    doc.setTextColor(0); 
+
+    // Loop through items within a category
+    group.forEach(item => {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      
+      let priceStr = '';
+      let itemName = '';
+
+      // If the item has options, display the option name with the price
+      if (item.options) {
+        Object.entries(item.options).forEach(([opt, price]) => {
+          itemName = opt; // Use option name instead of item name
+          priceStr = `${formatPrice(price)}`;
+          
+          // Set green color for option names
+          doc.setTextColor(0, 128, 0);
+          doc.text(itemName, 16, y); // Option name aligned left
+          doc.setTextColor(0); // Reset text color for price
+          doc.text(priceStr, 170, y, { align: 'right' }); // Option price aligned right
+          y += 7;
+        });
+      } else if (item.name) {
+        // Regular menu item name (if no options)
+        itemName = item.name;
+        doc.setTextColor(0, 128, 0); // Set green color for item name
+        doc.text(itemName, 16, y); // Menu item name
+        y += 5;
+        
+        if (item.price) {
+          priceStr = formatPrice(item.price);
+          doc.setTextColor(0); // Reset text color for price
+          doc.text(priceStr, 170, y, { align: 'right' }); // Price aligned right
+          y += 7;
+        }
+      }
+
+      // If the item has choices, list them separately (green)
+      if (item.choices) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 128, 0); // Green color for "Choices:"
+        doc.text('Choices:', 18, y);
+        y += 5;
+
+        // Adjust the font size and position for choices
+        Object.entries(item.choices).forEach(([choice, price]) => {
+          const choiceText = `${choice}: ${formatPrice(price)}`;
+          doc.text(choiceText, 18, y);
+          y += 5;
+        });
+
+        doc.setTextColor(0); // Reset text color to black after choices
+      }
+
+      // Add description if available
+      if (item.description && typeof item.description === 'string') {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100); // Light gray color for description
+        const lines = doc.splitTextToSize(item.description, 170);
+        lines.forEach(line => {
+          doc.text(line, 18, y);
+          y += 5;
+        });
+        doc.setFontSize(12).setTextColor(0); // Reset font and color
+      }
+
+      // If page exceeds 270 (bottom of the page), add a new page
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
     });
-  }
+
+    y += 10;
+  });
+
+  // Trigger download of the PDF
+  const fileName = `BahnThaiMenu_${Date.now()}.pdf`;
+  doc.save(fileName);
 }
 
-window.addNewOption = function() {
-  const container = document.getElementById("newOptionsContainer");
-  const div = document.createElement("div");
-  div.innerHTML = `
-    <input type="text" placeholder="Option Name" class="newOptionName" />
-    <input type="text" placeholder="Thai Name" class="newThaiName" />
-    <input type="number" placeholder="Price" step="0.01" class="newOptionPrice" />
-    <button type="button" onclick="this.parentElement.remove()">🗑️</button>
-  `;
-  container.appendChild(div);
-}
-
-window.addNewChoice = function() {
-  const container = document.getElementById("newChoicesContainer");
-  const div = document.createElement("div");
-  div.innerHTML = `
-    <input type="text" placeholder="Choice Label" class="newChoiceName" />
-    <input type="number" placeholder="Price" step="0.01" class="newChoicePrice" />
-    <button type="button" onclick="this.parentElement.remove()">🗑️</button>
-  `;
-  container.appendChild(div);
-}
-window.createItem = async function () {
-  const name = document.getElementById("newMenuName").value.trim();
-  const category = document.getElementById("newMenuCategory").value.trim();
-  const description = document.getElementById("newMenuDescription").value.trim();
-  const price = parseFloat(document.getElementById("newMenuPrice").value);
-
-  const options = {};
-  const thaioptions = {};
-  const optionNameEls = document.getElementsByClassName("newOptionName");
-  const optionThaiEls = document.getElementsByClassName("newThaiName");
-  const optionPriceEls = document.getElementsByClassName("newOptionPrice");
-
-  for (let i = 0; i < optionNameEls.length; i++) {
-    const optName = optionNameEls[i].value.trim();
-    const optThai = optionThaiEls[i].value.trim();
-    const optPrice = parseFloat(optionPriceEls[i].value);
-    if (optName && !isNaN(optPrice)) {
-      options[optName] = optPrice;
-      thaioptions[optName] = optThai;
-    }
-  }
-
-  const choices = {};
-  const choiceNameEls = document.getElementsByClassName("newChoiceName");
-  const choicePriceEls = document.getElementsByClassName("newChoicePrice");
-
-  for (let i = 0; i < choiceNameEls.length; i++) {
-    const choiceName = choiceNameEls[i].value.trim();
-    const choicePrice = parseFloat(choicePriceEls[i].value);
-    if (choiceName && !isNaN(choicePrice)) {
-      choices[choiceName] = choicePrice;
-    }
-  }
-
-  if (!name || !category) {
-    alert("Name and Category are required.");
-    return;
-  }
-
-  const newItem = {
-    name,
-    category,
-    description,
-    order: Date.now(), // You can replace with manual input if needed
-  };
-
-  if (Object.keys(options).length > 0) {
-    newItem.options = options;
-    newItem.thaioptions = thaioptions;
-  } else if (Object.keys(choices).length > 0) {
-    newItem.choices = choices;
-  } else if (!isNaN(price)) {
-    newItem.price = price;
-  }
-
-  try {
-    await addDoc(collection(db, "applebyline"), newItem);
-    alert("New menu item added successfully!");
-    resetCreateForm();
-    toggleNewMenuForm(); // Hide the form again
-  } catch (error) {
-    console.error("Error adding item:", error);
-    alert("Failed to add new item.");
-  }
-};
-
-function resetCreateForm() {
-  document.getElementById("createForm").reset();
-  document.getElementById("newOptionsContainer").innerHTML = "";
-  document.getElementById("newChoicesContainer").innerHTML = "";
-}
-
+// Hook the button for generating the PDF
+document.getElementById('generatePdfBtn').addEventListener('click', generateStyledMenuPDF);
