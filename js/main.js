@@ -675,7 +675,7 @@ function formatPrice(price) {
 
 async function generateStyledMenuPDF() {
 
-
+  console.log('click download menu');
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
