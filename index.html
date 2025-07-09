@@ -61,7 +61,7 @@
                             <h2 class="to-animate">Authentic Thai Cuisine</h2>
                         </div>
 <!--   <script src="https://www.fbgcdn.com/embedder/js/ewm2.js" defer async ></script> 
-      </div> --> -->
+      </div> -->
                     </div>
                 </div>
                 <ul class="slides">
@@ -298,7 +298,8 @@
                                         <li><a class="filter" data-filter=".RiceDishes">Rice Dishes</a></li>
                                         <li><a class="filter" data-filter=".SpecialtyThaiDesserts">Thai Desserts</a></li>
                                         <li><a class="filter" data-filter=".LunchSpecial">Lunch Special</a></li>
-                                        <li><a class="filter" href="https://firebasestorage.googleapis.com/v0/b/bahnthai-2ea23.appspot.com/o/BahnThaiMenu_1751089063841.pdf?alt=media&token=540dc126-8bcb-4482-9c9c-a18d1bb195fa">Download Menu</a></li>
+                                        <li id ="downloadMenu"><a class="filter">Download Menu</a></li>
+                                        <!-- <li><a class="filter" href="https://firebasestorage.googleapis.com/v0/b/bahnthai-2ea23.appspot.com/o/BahnThaiMenu_1751089063841.pdf?alt=media&token=540dc126-8bcb-4482-9c9c-a18d1bb195fa">Download Menu</a></li> -->
                                     </ul>
                                     <div class="row text-center fh5co-heading row-padded">
                                         <h3>* Lunch Specials ( from 11 - 2.30pm, Mon - Fri Except Hollidays ) *</h3>
@@ -397,8 +398,15 @@
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
                 <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/alertify.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-                <script type="module" src="js/getfirebasedata.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app-compat.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-auth-compat.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore-compat.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-storage-compat.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+                <script type="module" src="js/firebaseConfig.js"></script>
                 <!-- Main JS -->
                 <script type="text/javascript" src="js/main.js"></script>
                 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkbYqq9zFc3CQpIFp6jIgNYkKxMmz-fhk&callback=initMap">

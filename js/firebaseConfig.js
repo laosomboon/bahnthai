@@ -1,20 +1,4 @@
-// Firebase imports
-// import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
-// import { getAuth, signInWithEmailAndPassword, onAuthStateChanged , signOut } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js";
-// import {
-//   getFirestore,
-//   collection,
-//   query,
-//   orderBy,
-//   onSnapshot,
-//   doc,
-//   getDoc,
-//   setDoc,
-//   deleteDoc,
-//   getDocs,
-//   addDoc,
-//   updateDoc,
-// } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js";
+
 
 
 const firebaseConfig = {

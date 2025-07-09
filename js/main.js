@@ -29,37 +29,6 @@
 
 
 
-
-/*Fetch Menu from Firebase*/
- // const dbRefObject = firebase.database().ref().child('allmenus');
-
-
-    // const db = getFirestore();
-    // const colRef = collection(db, "applebyline");
-    
-    // const q = query(colRef, orderBy('order'));
-    
-    // onSnapshot(q, (snap) => {
-    //     let menus = [];
-    //     snap.docs.forEach(element => { 
-    //         menus.push({...element.data(), id: element.id});
-    //     });
-    
-    //     menus.forEach((menu) =>{
-    
-    //         let id = menu.category.replace(/\s|(?!<a(.*)>(.*))(&amp;|&)/g,'');
-    //         let elem = createMenuElement(id ,menu);
-    //         let menuContainer = document.getElementById('Container');
-    //                 if (elem) {
-    //                     menuContainer.appendChild(elem);
-    //                 }  
-    //     });
-
-
-
-
-
-
     var sliderMain = function() {
 
         $('#fh5co-home .flexslider').flexslider({
@@ -600,6 +569,8 @@
     // Document on load.
     $(function() {
 
+        console.log('onload....');
+
         fullHeight();
         sliderMain();
         sliderSayings();
@@ -649,8 +620,10 @@
                 e.preventDefault();
             }
         });
-
-
+        
+        console.log('addd.....');
+        // Hook the button for generating the PDF
+         $('#downloadMenu').click(generateStyledMenuPDF);
 
 
     });
@@ -659,8 +632,175 @@
     // Instantiate MixItUp:
     $('#Container').mixItUp();
 
+    
+
 
 }());
+
+
+
+
+
+// Category definitions
+const categories = [
+  { name: "Appetizers", key: "Appetizer", order: 1 },
+  { name: "Barbeque", key: "Barbeque", order: 4 },
+  { name: "Fish & Seafoods", key: "Fish & Seafood", order: 6 },
+  { name: "Lunch Specials", key: "Lunch Special", order: 10 },
+  { name: "Noodle Dishes", key: "Noodle Dishes", order: 8 },
+  { name: "Rice Dishes", key: "Rice Dishes", order: 9 },
+  { name: "Soups", key: "Soup", order: 2 },
+  { name: "Thai Desserts", key: "Specialty Thai Desserts", order: 11 },
+  { name: "Stir‑fried Dishes", key: "Stir‑fried Dishes", order: 5 },
+  { name: "Thai curries", key: "Thai Curries", order: 4 },
+  { name: "Thai Salads", key: "Thai Salads", order: 3 },
+  { name: "Vegetable", key: "Vegetables", order: 7 },
+];
+
+
+
+function formatPrice(price) {
+  if (typeof price !== 'number') {
+    // Try to convert price to number
+    price = Number(price);
+    if (isNaN(price)) {
+      throw new Error('Invalid price value');
+    }
+  }
+  return `$${price.toFixed(2)}`;
+}
+
+
+
+
+async function generateStyledMenuPDF() {
+
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Sort categories by order
+  categories.sort((a, b) => a.order - b.order);
+
+  // Set title of the PDF
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.text('Bahn Thai Menu', 14, 20);
+
+  let y = 30;
+
+  // Retrieve Firestore menu items
+  const snapshot = await firebase.firestore().collection('applebyline')
+                           .orderBy('order')
+                           .get();
+  const items = snapshot.docs.map(d => d.data());
+
+  // Insert each item by category (sorted order)
+  const catMap = {};
+  items.forEach(item => {
+    (catMap[item.category] ||= []).push(item);
+  });
+
+  categories.forEach(cat => {
+    const group = catMap[cat.key];
+    if (!group) return;
+
+    // Category title with custom style (underlined and green)
+    doc.setFontSize(16);
+    doc.setTextColor(0, 128, 0); // Green color for category
+    doc.text(cat.name, 14, y);
+    doc.setLineWidth(0.5);
+    doc.line(14, y + 2, 195, y + 2); // Underline category name
+    y += 8;
+
+    // Reset the text color for the menu items (black)
+    doc.setTextColor(0); 
+
+    // Loop through items within a category
+    group.forEach(item => {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      
+      let priceStr = '';
+      let itemName = '';
+
+      // If the item has options, display the option name with the price
+      if (item.options) {
+        Object.entries(item.options).forEach(([opt, price]) => {
+          itemName = opt; // Use option name instead of item name
+          priceStr = `${formatPrice(price)}`;
+          
+          // Set green color for option names
+          doc.setTextColor(0, 128, 0);
+          doc.text(itemName, 16, y); // Option name aligned left
+          doc.setTextColor(0); // Reset text color for price
+          doc.text(priceStr, 170, y, { align: 'right' }); // Option price aligned right
+          y += 7;
+        });
+      } else if (item.name) {
+        // Regular menu item name (if no options)
+        itemName = item.name;
+        doc.setTextColor(0, 128, 0); // Set green color for item name
+        doc.text(itemName, 16, y); // Menu item name
+        y += 5;
+        
+        if (item.price) {
+          priceStr = formatPrice(item.price);
+          doc.setTextColor(0); // Reset text color for price
+          doc.text(priceStr, 170, y, { align: 'right' }); // Price aligned right
+          y += 7;
+        }
+      }
+
+      // If the item has choices, list them separately (green)
+      if (item.choices) {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 128, 0); // Green color for "Choices:"
+        doc.text('Choices:', 18, y);
+        y += 5;
+
+        // Adjust the font size and position for choices
+        Object.entries(item.choices).forEach(([choice, price]) => {
+          const choiceText = `${choice}: ${formatPrice(price)}`;
+          doc.text(choiceText, 18, y);
+          y += 5;
+        });
+
+        doc.setTextColor(0); // Reset text color to black after choices
+      }
+
+      // Add description if available
+      if (item.description && typeof item.description === 'string') {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100); // Light gray color for description
+        const lines = doc.splitTextToSize(item.description, 170);
+        lines.forEach(line => {
+          doc.text(line, 18, y);
+          y += 5;
+        });
+        doc.setFontSize(12).setTextColor(0); // Reset font and color
+      }
+
+      // If page exceeds 270 (bottom of the page), add a new page
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    y += 10;
+  });
+
+
+
+  // Trigger download of the PDF
+  const fileName = `BahnThaiMenu_${Date.now()}.pdf`;
+  doc.save(fileName);
+}
+
+
+
 
 function initMap() {
     var uluru = { lat: 43.372800, lng: -79.7622000 };
