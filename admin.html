@@ -1,269 +1,97 @@
 <!DOCTYPE html>
 <html>
-<title>Bahn Thai Admin</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-
-
-<!-- alertify css -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
-<!-- Default theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/default.min.css" />
-<!-- Semantic UI theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/semantic.min.css" />
-<!-- Bootstrap theme -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/bootstrap.min.css" />
-
-<!-- end Alertify setup -->
-
-<link href='https://fonts.googleapis.com/css?family=RobotoDraft' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-<link rel="stylesheet" href="/css/admin.css">
-
-
-<!-- Alertify js-->
-<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>
-
+<head>
+  <title>Bahn Thai Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" />
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/themes/default.min.css" />
+  <link href='https://fonts.googleapis.com/css?family=RobotoDraft' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
 <body>
-
-    <!-- Side Navigation -->
-    <nav class="w3-sidebar w3-bar-block w3-collapse w3-white w3-animate-left w3-card" style="z-index:3;width:320px;"
-        id="mySidebar">
-        <a href="/" class="w3-bar-item w3-border-bottom" style="background: blue;">
-            <img src="/images/indexlogo.png" style="width:25%;">
-            <i class="fa fa-remove w3-button w3-right w3-red  w3-hide-large w3-large" onclick="w3_close();"></i>
-        </a>
-        <!-- <a href="javascript:void(0)"
-           class="w3-bar-item w3-button w3-dark-grey w3-button w3-hover-black w3-left-align"
-           onclick="document.getElementById('id01').style.display='block'">New Product<i class="w3-padding fa fa-plus"></i></a> -->
-        <div id="SidenavContainer">
-            <h4 class="w3-bar-item">Menu Categories</h4>
-        </div>
-
-    </nav>
-
-    <!-- Modal that pops up when you click on "New Product" -->
-    <!-- <div id="id01" class="w3-modal" style="z-index:4">
-        <div class="w3-modal-content w3-animate-zoom">
-            <div class="w3-container w3-padding w3-light-green">
-                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-red w3-right w3-small"><i class="fa fa-remove"></i></span>
-                <h2>New Product</h2>
-            </div>
-            <div class="w3-panel">
-                <form class="form-style-9" onsubmit="return false;" id="newProductForm">
-                    <ul>
-                        <li>
-                            <input type="hidden" id="newMenuId" value="" />
-                            <input type="text" id="newMenuName" name="name" class="field-style field-full align-none" placeholder="Name" />
-                        </li>
-                        <li>
-                            <select class="w3-select" name="newMenuCate">
-                                <option value="" disabled selected>Choose Category</option>
-                                <option value="0">Appitizer</option>
-                                <option value="1">Thai salads</option>
-                                <option value="2">Soup</option>
-                                <option value="3">Thai curries</option>
-                                <option value="4">Fish & Seafood</option>
-                                <option value="5">Stir-fried Dishes</option>
-                                <option value="6">Barbecue</option>
-                                <option value="7">Vegetables</option>
-                                <option value="8">Noodle Dishes</option>
-                                <option value="9">Rice Dishes</option>
-                                <option value="10">Specialty Thai Desserts</option>
-                                <option value="11">Lunch Special</option>
-                            </select>
-                        </li>
-                        <li>
-                            <input type="text" id="newMenuImage" name="image" class="field-style field-full align-none" placeholder="Image Url" />
-                        </li>
-                        <li>
-                            <input type="text" id="newMenuThainame" name="thainame" class="field-style field-full align-none" placeholder="Thai name" />
-                        </li>
-                        <li>
-                            <input type="number" id="newMenuPrice" name="price" step=".01" class="field-style field-full align-none" placeholder="Price (ex : 9.95)" />
-                        </li>
-                        <li>
-                            <p><input class="w3-input w3-border w3-col-6" id="newMenuSpiceLevel" type="number" name="spice_level" placeholder="Spice Level (0-5)" value="" min="0" max="5"></p>
-                        </li>
-                        <li>
-                            <textarea name="description" class="field-style" id="newMenuDescription" placeholder="description"></textarea>
-                        </li>
-                        <li>
-                            <div class="w3-section">
-                                <a class="w3-button w3-red" onclick="document.getElementById('id01').style.display='none'">Cancel  <i class="fa fa-remove"></i></a>
-                                <a class="w3-button w3-light-green w3-right" onclick="addProduct();">Add</a>
-                            </div>
-                        </li>
-                    </ul>
-                </form>
-            </div>
-        </div>
-    </div> -->
-
-
-
-
-
-
-    <!-- Overlay effect when opening the side navigation on small screens -->
-    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
-        title="Close Sidemenu" id="myOverlay"></div>
-
-    <!-- Page content -->
-    <div class="w3-main" style="margin-left:320px;">
-        <button id="logoutBtn" style="display:inline-block;float:right;margin:20px 20px 0"
-            class="w3-btn w3-small w3-red" onclick="signMeOut()">Logout</button>
-        <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top"
-            onclick="w3_open()"></i>
-        <!--<a href="javascript:void(0)" class="w3-hide-large w3-red w3-button w3-right w3-margin-top w3-margin-right" onclick="document.getElementById('id01').style.display='block'">-->
-        <!--<i class="fa fa-pencil"></i></a>-->
-
-        <div id="formWrapper" class="w3-container person">
-            <div class="container w3-padding w3-large w3-pale-blue">
-                <img class="w3-round" id="showImage" src="" alt="" width="70"
-                    style="display: inline-block;">&nbsp;&nbsp;&nbsp;
-                <h2 id="showName" style="display: inline-block;"></h2>
-            </div>
-            <!-- New Menu Item Button -->
-            <button class="w3-btn w3-green w3-margin-top" onclick="toggleNewMenuForm()">+ New Menu Item</button>
-            <button
-              id="generatePdfBtn"
-              class="w3-btn w3-blue w3-margin-top"
-            >
-              Generate & Publish PDF
-            </button>
-            <!-- Hidden Form -->
-            <form id="createForm" class="form-style-9 w3-margin-top" style="display: none;" onsubmit="return false;">
-                <ul>
-                    <li><input type="text" id="newMenuName" placeholder="Name" class="field-style field-full" /></li>
-
-                    <li>
-                        <select id="newMenuCategory" class="field-style field-full">
-                            <option value="">-- Select Category --</option>
-                            <!-- Will be dynamically populated -->
-                        </select>
-                    </li>
-
-                    <li><textarea id="newMenuDescription" placeholder="Description" class="field-style"
-                            rows="3"></textarea></li>
-                    <li><input type="number" id="newMenuPrice" step="0.01" placeholder="Price (if no options/choices)"
-                            class="field-style field-full" /></li>
-
-                    <li>
-                        <label><strong>Options (Thai name and price)</strong></label>
-                        <div id="newOptionsContainer"></div>
-                        <button type="button" onclick="addNewOption()">+ Add Option</button>
-                    </li>
-
-                    <li>
-                        <label><strong>Choices (label and price)</strong></label>
-                        <div id="newChoicesContainer"></div>
-                        <button type="button" onclick="addNewChoice()">+ Add Choice</button>
-                    </li>
-
-                    <li>
-                        <button class="w3-btn w3-small w3-green" onclick="createItem()">Create</button>
-                        <button class="w3-btn w3-small w3-gray" type="button"
-                            onclick="toggleNewMenuForm()">Cancel</button>
-                    </li>
-                </ul>
-            </form>
-
-
-            <form class="form-style-9" onsubmit="return false;" id="updateForm">
-                <ul>
-                    <li>
-                        <input type="hidden" id="menuId" name="id" value="" />
-                    </li>
-
-                    <li>
-                        <label for="menuName"><strong>Name</strong></label>
-                        <input type="text" id="menuName" name="name" class="field-style field-full align-none"
-                            placeholder="Name" />
-                    </li>
-
-                    <li>
-                        <label for="menuDescription"><strong>Description</strong></label>
-                        <textarea id="menuDescription" name="description" class="field-style" placeholder="Description"
-                            rows="3"></textarea>
-                    </li>
-
-                    <!-- For options -->
-                    <li id="optionsWrapper" style="display:none;">
-                        <label><strong>Options (Price + Thai Name)</strong></label>
-                        <div id="optionsContainer"></div>
-                        <button type="button" onclick="addOption()">+ Add Option</button>
-                    </li>
-
-                    <!-- For choices -->
-                    <li id="choicesWrapper" style="display:none;">
-                        <label><strong>Choices (Size or Set)</strong></label>
-                        <div id="choicesContainer"></div>
-                        <button type="button" onclick="addChoice()">+ Add Choice</button>
-                    </li>
-
-                    <!-- Single price -->
-                    <li id="singlePriceWrapper" style="display:none;">
-                        <input type="number" id="menuPrice" name="price" step=".01"
-                            class="field-style field-full align-none" placeholder="Price" />
-                    </li>
-
-
-
-                    <li>
-                        <button class="w3-btn w3-small w3-teal" onclick="updateItem(this);" type="submit">
-                            Update
-                        </button>
-                        <button class="w3-btn w3-small w3-red" onclick="deleteItem(this);" type="button">
-                            Delete
-                        </button>
-                    </li>
-                </ul>
-            </form>
-        </div>
+  <nav class="w3-sidebar w3-bar-block w3-collapse w3-white w3-animate-left w3-card" style="z-index:3;width:320px;" id="mySidebar">
+    <a href="/" class="w3-bar-item w3-border-bottom" style="background: blue;">
+      <img src="/images/indexlogo.png" style="width:25%;">
+      <i class="fa fa-remove w3-button w3-right w3-red  w3-hide-large w3-large" onclick="w3_close();"></i>
+    </a>
+    <div id="SidenavContainer">
+      <h4 class="w3-bar-item">Menu Categories</h4>
     </div>
+  </nav>
 
+  <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="Close Sidemenu" id="myOverlay"></div>
+
+  <div class="w3-main" style="margin-left:320px;">
+    <button id="logoutBtn" style="float:right;margin:20px" class="w3-btn w3-small w3-red" onclick="signMeOut()">Logout</button>
+    <i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
+
+    <div id="formWrapper" class="w3-container person">
+      <div class="container w3-padding w3-large w3-pale-blue">
+        <img class="w3-round" id="showImage" src="" alt="" width="70">
+        <h2 id="showName" style="display:inline-block; margin-left:10px;"></h2>
+      </div>
+
+      <button class="w3-btn w3-green w3-margin-top" onclick="toggleNewMenuForm()">+ New Menu Item</button>
+
+      <form id="createForm" class="form-style-9 w3-margin-top" style="display: none;" onsubmit="return false;">
+        <ul>
+          <li><input type="text" id="newMenuName" placeholder="Name" class="field-style field-full" /></li>
+          <li>
+            <select id="newMenuCategory" class="field-style field-full">
+              <option value="">-- Select Category --</option>
+            </select>
+          </li>
+          <li><textarea id="newMenuDescription" placeholder="Description" class="field-style" rows="3"></textarea></li>
+          <li><input type="number" id="newMenuPrice" step="0.01" placeholder="Price (if no options/choices)" class="field-style field-full" /></li>
+          <li><input type="number" id="newMenuOrder" placeholder="Display Order" class="field-style field-full" /></li>
+          <li>
+            <label><strong>Options (Thai name and price)</strong></label>
+            <div id="newOptionsContainer"></div>
+            <button type="button" onclick="addNewOption()">+ Add Option</button>
+          </li>
+          <li>
+            <label><strong>Choices (label and price)</strong></label>
+            <div id="newChoicesContainer"></div>
+            <button type="button" onclick="addNewChoice()">+ Add Choice</button>
+          </li>
+          <li>
+            <button class="w3-btn w3-small w3-green" onclick="createItem()">Create</button>
+            <button class="w3-btn w3-small w3-gray" type="button" onclick="toggleNewMenuForm()">Cancel</button>
+          </li>
+        </ul>
+      </form>
+
+      <form class="form-style-9" onsubmit="return false;" id="updateForm">
+        <ul>
+          <li><input type="hidden" id="menuId" /></li>
+          <li><label>Name</label><input type="text" id="menuName" class="field-style field-full" /></li>
+          <li><label>Description</label><textarea id="menuDescription" class="field-style" rows="3"></textarea></li>
+          <li><label>Order</label><input type="number" id="menuOrder" class="field-style field-full" /></li>
+          <li id="optionsWrapper" style="display:none;"><label>Options</label><div id="optionsContainer"></div><button type="button" onclick="addOption()">+ Add Option</button></li>
+          <li id="choicesWrapper" style="display:none;"><label>Choices</label><div id="choicesContainer"></div><button type="button" onclick="addChoice()">+ Add Choice</button></li>
+          <li id="singlePriceWrapper" style="display:none;"><input type="number" id="menuPrice" step=".01" class="field-style field-full" placeholder="Price" /></li>
+          <li>
+            <button class="w3-btn w3-small w3-teal" onclick="updateItem(this);" type="submit">Update</button>
+            <button class="w3-btn w3-small w3-red" onclick="deleteItem(this);" type="button">Delete</button>
+          </li>
+        </ul>
+      </form>
     </div>
+  </div>
 
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-storage-compat.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script>
 
-
-
- 
-
-    <!-- jQuery -->
-    <script src="js/jquery.min.js"></script>
-    <!-- jQuery Easing -->
-    <script src="js/jquery.easing.1.3.js"></script>
-    <!-- Bootstrap -->
-    <script src="js/bootstrap.min.js"></script>
-    <!-- Bootstrap DateTimePicker -->
-    <script src="js/moment.js"></script>
-    <script src="js/bootstrap-datetimepicker.min.js"></script>
-    <!-- Waypoints -->
-    <script src="js/jquery.waypoints.min.js"></script>
-    <!-- Stellar Parallax -->
-    <script src="js/jquery.stellar.min.js"></script>
-
-    <!-- Flexslider -->
-    <script src="js/jquery.flexslider-min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/2.1.11/jquery.mixitup.js"></script>
-
-
-    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-storage-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Main JS -->
-    <!-- ✅ Your Firebase config file -->
-    <script src="js/firebaseConfig.js"></script>
-    <!-- <script src="js/initfirebase.js"></script> --> -->
-    <script src="js/admin.js"></script>
-
+  <script type="module" src="js/firebaseConfig.js"></script>
+  <script type="module" src="js/utils.js"></script>
+  <script type="module" src="js/admin.js"></script>
 </body>
-
 </html>
