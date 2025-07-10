@@ -29,6 +29,7 @@ onAuthStateChanged(auth, async user => {
     await signOut(auth);
     return location.assign('login.html');
   }
+  populateCategories();
   initMenuListener();
 });
 
@@ -40,6 +41,26 @@ function initMenuListener() {
     renderSideNav(menus);
   });
 }
+function populateCategories() {
+  const selects = [
+    document.getElementById('newMenuCategory'),
+    document.getElementById('menuCategory')
+  ];
+
+  selects.forEach(select => {
+    select.innerHTML = '<option value="">-- Select Category --</option>';
+    categories
+      .slice()
+      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+      .forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.key;
+        opt.textContent = cat.name;
+        select.appendChild(opt);
+      });
+  });
+}
+
 
 // 3️⃣ Sidebar Rendering
 function renderSideNav(menus) {
@@ -84,6 +105,7 @@ function toggleSection(id) {
 
 // 4️⃣ Load item into form
 async function openMenu(menu) {
+  document.getElementById('createForm').style.display = 'none';
   const ref = doc(db, 'applebyline', menu.id);
   const snap = await getDoc(ref);
   if (!snap.exists()) return alert('Item not found');
@@ -92,6 +114,7 @@ async function openMenu(menu) {
   document.getElementById('menuId').value = menu.id;
   document.getElementById('menuName').value = data.name || '';
   document.getElementById('menuDescription').value = data.description || '';
+  document.getElementById('menuCategory').value = data.category || '';
   document.getElementById('menuPrice').value = data.price || '';
   document.getElementById('menuOrder').value = data.order ?? '';
 
@@ -118,8 +141,58 @@ function toggleWrappers(type) {
   document.getElementById('singlePriceWrapper').style.display = type === 'price' ? 'block' : 'none';
 }
 
-// 5️⃣ Add option / choice helpers
-// … (use your existing addOption/addChoice functions unchanged)
+window.addOption = (name = '', price = '', thaiName = '') => {
+  const container = document.getElementById('optionsContainer');
+  const div = document.createElement('div');
+  div.className = 'optionRow';
+  div.innerHTML = `
+    <input type="text" placeholder="Option name" value="${name}">
+    <input type="text" placeholder="Thai name" value="${thaiName}">
+    <input type="number" placeholder="Price" step="0.01" value="${price}">
+    <button type="button" onclick="this.parentNode.remove()">🗑️</button>
+  `;
+  container.appendChild(div);
+};
+
+window.addChoice = (label = '', price = '') => {
+  const container = document.getElementById('choicesContainer');
+  const div = document.createElement('div');
+  div.className = 'choiceRow';
+  div.innerHTML = `
+    <input type="text" placeholder="Choice label" value="${label}">
+    <input type="number" placeholder="Price" step="0.01" value="${price}">
+    <button type="button" onclick="this.parentNode.remove()">🗑️</button>
+  `;
+  container.appendChild(div);
+};
+
+window.addNewOption = (name = '', price = '', thaiName = '') => {
+  const container = document.getElementById('newOptionsContainer');
+  const div = document.createElement('div');
+  div.className = 'optionRow';
+  div.innerHTML = `
+    <input type="text" placeholder="Option name" value="${name}">
+    <input type="text" placeholder="Thai name" value="${thaiName}">
+    <input type="number" placeholder="Price" step="0.01" value="${price}">
+    <button type="button" onclick="this.parentNode.remove()">🗑️</button>
+  `;
+  container.appendChild(div);
+};
+
+window.addNewChoice = (label = '', price = '') => {
+  const container = document.getElementById('newChoicesContainer');
+  const div = document.createElement('div');
+  div.className = 'choiceRow';
+  div.innerHTML = `
+    <input type="text" placeholder="Choice label" value="${label}">
+    <input type="number" placeholder="Price" step="0.01" value="${price}">
+    <button type="button" onclick="this.parentNode.remove()">🗑️</button>
+  `;
+  container.appendChild(div);
+};
+
+
+
 
 // 6️⃣ CRUD operations
 window.createItem = async () => {
@@ -147,9 +220,67 @@ window.deleteItem = async () => {
 };
 
 function buildPayloadFromForm(prefix) {
-  // Extract values same as your old logic
-  // Return payload object
+  const name = document.getElementById(`${prefix}MenuName`).value.trim();
+  const description = document.getElementById(`${prefix}MenuDescription`)?.value.trim() || '';
+  const price = parseFloat(document.getElementById(`${prefix}MenuPrice`)?.value) || 0;
+  const order = parseInt(document.getElementById(`${prefix}MenuOrder`)?.value) || 0;
+  const category = document.getElementById(`${prefix}MenuCategory`)?.value || '';
+
+  const payload = {
+    name,
+    description,
+    order,
+    category
+  };
+
+  // Detect if options/choices are present
+  const optionsRows = document.querySelectorAll('#newOptionsContainer .optionRow');
+  const choicesRows = document.querySelectorAll('#newChoicesContainer .choiceRow');
+
+  if (optionsRows.length > 0) {
+    const options = {};
+    const thaioptions = {};
+    optionsRows.forEach(row => {
+      const [optName, thaiName, optPrice] = row.querySelectorAll('input');
+      if (optName.value.trim()) {
+        options[optName.value.trim()] = parseFloat(optPrice.value) || 0;
+        thaioptions[optName.value.trim()] = thaiName.value.trim();
+      }
+    });
+    payload.options = options;
+    payload.thaioptions = thaioptions;
+  } else if (choicesRows.length > 0) {
+    const choices = {};
+    choicesRows.forEach(row => {
+      const [label, chPrice] = row.querySelectorAll('input');
+      if (label.value.trim()) {
+        choices[label.value.trim()] = parseFloat(chPrice.value) || 0;
+      }
+    });
+    payload.choices = choices;
+  } else {
+    payload.price = price;
+  }
+
+  return payload;
 }
+window.resetCreateForm = () => {
+  document.getElementById('createForm').reset();
+  document.getElementById('newOptionsContainer').innerHTML = '';
+  document.getElementById('newChoicesContainer').innerHTML = '';
+};
+
+window.toggleNewMenuForm = () => {
+  const form = document.getElementById('createForm');
+  if (form.style.display === 'none' || form.style.display === '') {
+    form.style.display = 'block';
+    window.resetCreateForm?.();
+  } else {
+    form.style.display = 'none';
+  }
+};
+
+
 
 // 7️⃣ Logout
 window.signMeOut = async () => {
