@@ -23,7 +23,7 @@ export async function generateStyledMenuPDF() {
   categories.sort((a, b) => (a.order || 999) - (b.order || 999));
 
   // Title
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('times', 'bold');
   doc.setFontSize(22);
   doc.text('Bahn Thai Menu', 14, 20);
 
@@ -46,7 +46,7 @@ export async function generateStyledMenuPDF() {
     if (!group) continue;
 
     doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');  // added
+    doc.setFont('times', 'bold');  // added
     doc.setTextColor('orange');
     doc.text(cat.name, 14, y);
     doc.setLineWidth(0.5);
@@ -59,14 +59,14 @@ export async function generateStyledMenuPDF() {
         y = 20;
       }
 
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('times', 'normal');
       doc.setFontSize(14);
 
       // Options
       if (item.options) {
         for (const [opt, price] of Object.entries(item.options)) {
           doc.setTextColor(0, 128, 0);
-          doc.text(opt, 16, y);
+          doc.text(opt, 14, y);
           doc.setTextColor(0);
           doc.text(formatPrice(price), 190, y, { align: 'right' });
           y += 7;
@@ -76,7 +76,7 @@ export async function generateStyledMenuPDF() {
       // Single name + price
       else if (item.name) {
         doc.setTextColor(0, 128, 0);
-        doc.text(item.name, 16, y);
+        doc.text(item.name, 14, y);
         if (item.price) {
           doc.setTextColor(0);
           doc.text(formatPrice(item.price), 190, y, { align: 'right' });
@@ -88,7 +88,7 @@ export async function generateStyledMenuPDF() {
       if (item.choices) {
         doc.setFontSize(12);
         doc.setTextColor(0, 128, 0);
-        doc.text('Choices:', 18, y);
+        // doc.text('Choices:', 18, y);
         y += 5;
 
         for (const [choice, price] of Object.entries(item.choices)) {
@@ -100,7 +100,7 @@ export async function generateStyledMenuPDF() {
       // Description
       if (item.description) {
         doc.setFontSize(10).setTextColor(100);
-        doc.setFont('helvetica', 'italic');  // added
+        doc.setFont('time', 'italic');  // added
         y = printWrappedText(doc, item.description, 18, y, 170);
       }
 
