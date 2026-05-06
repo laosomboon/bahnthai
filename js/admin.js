@@ -15,17 +15,26 @@ import {
   getDoc,
   addDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  deleteField
 } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js';
 
 import { categories } from './utils.js';
+
+function initNotifier() {
+  if (!window.alertify || typeof window.alertify.set !== 'function') return;
+  window.alertify.set('notifier', 'position', 'bottom-right');
+  window.alertify.set('notifier', 'delay', 3);
+}
+
+initNotifier();
 
 // 1️⃣ Admin Authentication Guard
 onAuthStateChanged(auth, async user => {
   if (!user) return location.assign('login.html');
   const token = await user.getIdTokenResult();
   if (!token.claims.isAdmin) {
-    alert('Access denied: Admins only!');
+    notify('error', 'Access denied: Admins only');
     await signOut(auth);
     return location.assign('login.html');
   }
@@ -108,7 +117,10 @@ async function openMenu(menu) {
   document.getElementById('createForm').style.display = 'none';
   const ref = doc(db, 'applebyline', menu.id);
   const snap = await getDoc(ref);
-  if (!snap.exists()) return alert('Item not found');
+  if (!snap.exists()) {
+    notify('error', 'Item not found');
+    return;
+  }
 
   const data = snap.data();
   document.getElementById('menuId').value = menu.id;
@@ -195,36 +207,91 @@ window.addNewChoice = (label = '', price = '') => {
 
 
 // 6️⃣ CRUD operations
+function notify(type, message) {
+  if (window.alertify && typeof window.alertify.notify === 'function') {
+    const normalizedType = type === 'error' ? 'error' : 'success';
+    window.alertify.notify(message, normalizedType, 3);
+    return;
+  }
+  if (type === 'error') {
+    alert(message);
+  } else {
+    console.log(message);
+  }
+}
+
 window.createItem = async () => {
-  const payload = buildPayloadFromForm('new');
-  await addDoc(collection(db, 'applebyline'), payload);
-  alert('New item created!');
-  if (typeof resetCreateForm === 'function') resetCreateForm();
+  try {
+    const payload = buildPayloadFromForm('new');
+    await addDoc(collection(db, 'applebyline'), payload);
+    notify('success', 'New item saved successfully');
+    if (typeof resetCreateForm === 'function') resetCreateForm();
+  } catch (error) {
+    console.error('Create failed:', error);
+    notify('error', 'Could not save new item');
+  }
 };
 
 window.updateItem = async () => {
   const id = document.getElementById('menuId').value;
-  if (!id) return alert('Please select an item.');
-  const payload = buildPayloadFromForm('menu');
-  const ref = doc(db, 'applebyline', id);
-  await updateDoc(ref, payload);
-  alert('Item updated!');
+  if (!id) return notify('error', 'Please select an item first');
+
+  try {
+    const payload = buildPayloadFromForm('menu');
+    const ref = doc(db, 'applebyline', id);
+    await updateDoc(ref, payload);
+    notify('success', 'Menu item saved successfully');
+  } catch (error) {
+    console.error('Update failed:', error);
+    notify('error', 'Could not save changes');
+  }
 };
 
 window.deleteItem = async () => {
   const id = document.getElementById('menuId').value;
-  if (!id || !confirm('Delete this item?')) return;
-  const ref = doc(db, 'applebyline', id);
-  await deleteDoc(ref);
-  alert('Item deleted.');
+  if (!id) {
+    notify('error', 'Please select an item first');
+    return;
+  }
+
+  const executeDelete = async () => {
+    try {
+      const ref = doc(db, 'applebyline', id);
+      await deleteDoc(ref);
+      notify('success', 'Item deleted');
+    } catch (error) {
+      console.error('Delete failed:', error);
+      notify('error', 'Could not delete item');
+    }
+  };
+
+  if (window.alertify && typeof window.alertify.confirm === 'function') {
+    window.alertify.confirm('Delete this item?', executeDelete, () => {});
+    return;
+  }
+
+  if (confirm('Delete this item?')) {
+    await executeDelete();
+  }
 };
 
 function buildPayloadFromForm(prefix) {
-  const name = document.getElementById(`${prefix}MenuName`).value.trim();
-  const description = document.getElementById(`${prefix}MenuDescription`)?.value.trim() || '';
-  const price = parseFloat(document.getElementById(`${prefix}MenuPrice`)?.value) || 0;
-  const order = parseInt(document.getElementById(`${prefix}MenuOrder`)?.value) || 0;
-  const category = document.getElementById(`${prefix}MenuCategory`)?.value || '';
+  const isNewForm = prefix === 'new';
+  const ids = {
+    name: isNewForm ? 'newMenuName' : 'menuName',
+    description: isNewForm ? 'newMenuDescription' : 'menuDescription',
+    price: isNewForm ? 'newMenuPrice' : 'menuPrice',
+    order: isNewForm ? 'newMenuOrder' : 'menuOrder',
+    category: isNewForm ? 'newMenuCategory' : 'menuCategory',
+    optionsContainer: isNewForm ? '#newOptionsContainer .optionRow' : '#optionsContainer .optionRow',
+    choicesContainer: isNewForm ? '#newChoicesContainer .choiceRow' : '#choicesContainer .choiceRow'
+  };
+
+  const name = document.getElementById(ids.name)?.value.trim() || '';
+  const description = document.getElementById(ids.description)?.value.trim() || '';
+  const price = parseFloat(document.getElementById(ids.price)?.value) || 0;
+  const order = parseInt(document.getElementById(ids.order)?.value) || 0;
+  const category = document.getElementById(ids.category)?.value || '';
 
   const payload = {
     name,
@@ -234,8 +301,8 @@ function buildPayloadFromForm(prefix) {
   };
 
   // Detect if options/choices are present
-  const optionsRows = document.querySelectorAll('#newOptionsContainer .optionRow');
-  const choicesRows = document.querySelectorAll('#newChoicesContainer .choiceRow');
+  const optionsRows = document.querySelectorAll(ids.optionsContainer);
+  const choicesRows = document.querySelectorAll(ids.choicesContainer);
 
   if (optionsRows.length > 0) {
     const options = {};
@@ -249,6 +316,8 @@ function buildPayloadFromForm(prefix) {
     });
     payload.options = options;
     payload.thaioptions = thaioptions;
+    payload.choices = deleteField();
+    payload.price = deleteField();
   } else if (choicesRows.length > 0) {
     const choices = {};
     choicesRows.forEach(row => {
@@ -258,8 +327,14 @@ function buildPayloadFromForm(prefix) {
       }
     });
     payload.choices = choices;
+    payload.options = deleteField();
+    payload.thaioptions = deleteField();
+    payload.price = deleteField();
   } else {
     payload.price = price;
+    payload.options = deleteField();
+    payload.thaioptions = deleteField();
+    payload.choices = deleteField();
   }
 
   return payload;
