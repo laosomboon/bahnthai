@@ -19,7 +19,7 @@ import {
   deleteField
 } from 'https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js';
 
-import { categories } from './utils.js';
+import { categories, findCategoryByValue } from './utils.js';
 
 function initNotifier() {
   if (!window.alertify || typeof window.alertify.set !== 'function') return;
@@ -79,7 +79,7 @@ function renderSideNav(menus) {
     .slice()
     .sort((a, b) => (a.order || 999) - (b.order || 999))
     .forEach(cat => {
-      const items = menus.filter(m => m.category === cat.key);
+      const items = menus.filter(menu => findCategoryByValue(menu.category)?.key === cat.key);
       if (!items.length) return;
 
       const id = cat.key.replace(/\W+/g, '');
@@ -123,10 +123,11 @@ async function openMenu(menu) {
   }
 
   const data = snap.data();
+  const matchedCategory = findCategoryByValue(data.category);
   document.getElementById('menuId').value = menu.id;
   document.getElementById('menuName').value = data.name || '';
   document.getElementById('menuDescription').value = data.description || '';
-  document.getElementById('menuCategory').value = data.category || '';
+  document.getElementById('menuCategory').value = matchedCategory?.key || data.category || '';
   document.getElementById('menuPrice').value = data.price || '';
   document.getElementById('menuOrder').value = data.order ?? '';
 
