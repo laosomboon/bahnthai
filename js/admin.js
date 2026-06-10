@@ -317,8 +317,7 @@ function buildPayloadFromForm(prefix) {
     });
     payload.options = options;
     payload.thaioptions = thaioptions;
-    payload.choices = deleteField();
-    payload.price = deleteField();
+    if (!isNewForm) { payload.choices = deleteField(); payload.price = deleteField(); }
   } else if (choicesRows.length > 0) {
     const choices = {};
     choicesRows.forEach(row => {
@@ -328,14 +327,10 @@ function buildPayloadFromForm(prefix) {
       }
     });
     payload.choices = choices;
-    payload.options = deleteField();
-    payload.thaioptions = deleteField();
-    payload.price = deleteField();
+    if (!isNewForm) { payload.options = deleteField(); payload.thaioptions = deleteField(); payload.price = deleteField(); }
   } else {
     payload.price = price;
-    payload.options = deleteField();
-    payload.thaioptions = deleteField();
-    payload.choices = deleteField();
+    if (!isNewForm) { payload.options = deleteField(); payload.thaioptions = deleteField(); payload.choices = deleteField(); }
   }
 
   return payload;
