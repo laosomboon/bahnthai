@@ -20,6 +20,7 @@
   // const auth = getAuth(app);
 
 import {auth, db, storage} from "./firebaseConfig.js";
+import { getCategoryClassName } from './utils.js';
 
 function sortOptions(options){
     let sortable = [];
@@ -133,6 +134,7 @@ function createMenuElement(id, menu) {
 const colRef = collection(db, "applebyline");
 
 const q = query(colRef, orderBy('order'));
+let isMixItUpReady = false;
 
 onSnapshot(q, (snap) => {
     let menus = [];
@@ -140,15 +142,25 @@ onSnapshot(q, (snap) => {
         menus.push({...element.data(), id: element.id});
     });
 
+    let menuContainer = document.getElementById('Container');
+    menuContainer.innerHTML = '';
+
     menus.forEach((menu) =>{
 
-        let id = menu.category.replace(/\s|(?!<a(.*)>(.*))(&amp;|&)/g,'');
+        let id = getCategoryClassName(menu.category);
         let elem = createMenuElement(id ,menu);
-        let menuContainer = document.getElementById('Container');
                 if (elem) {
                     menuContainer.appendChild(elem);
                 }  
     });
+
+    if (window.jQuery && $.fn.mixItUp) {
+        if (isMixItUpReady) {
+            $('#Container').mixItUp('destroy');
+        }
+        $('#Container').mixItUp();
+        isMixItUpReady = true;
+    }
 
 
 

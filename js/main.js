@@ -58,14 +58,6 @@
         
         // Hook the button for generating the PDF
          $('#downloadMenu').click(generateStyledMenuPDF);
-
-
-          // Instantiate MixItUp:
-         $('#Container').mixItUp();
-
-    
-
-
     });
 
 
